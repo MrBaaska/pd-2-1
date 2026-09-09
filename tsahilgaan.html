@@ -1281,13 +1281,20 @@
 // =====================
 // DATA
 // =====================
-const REGISTERED_WORKERS_CACHE_KEYS = ['registeredWorkers_v1', 'workersCustom_v1', 'workersCache_v1'];
+const REGISTERED_WORKERS_CACHE_KEYS = ['workersCustom_v1', 'registeredWorkers_v1', 'workersCache_v1'];
 
 function normalizeWorkerFromRegistered(raw) {
     if (!raw) return null;
     const id = String(raw.id || '').trim();
-    const name = String(raw.name || '').trim();
-    const role = String(raw.role || raw.position || '').trim() || 'Тодорхойгүй';
+    const rawName = String(raw.name || '').trim();
+    const storedRole = String(raw.role || raw.position || '').trim();
+    const nameParts = rawName.split(/\s+/);
+    if (storedRole && nameParts.length > 1 && /^(пр-\d+|г\/ж|жолооч)$/i.test(nameParts[0])) {
+        nameParts.shift();
+    }
+    const inferredRole = storedRole || (nameParts.length > 1 ? nameParts.shift() : '');
+    const name = nameParts.join(' ').trim() || rawName;
+    const role = inferredRole || 'Тодорхойгүй';
     if (!id || !name) return null;
     return { id, name, role };
 }
@@ -1314,6 +1321,20 @@ function loadWorkersFromRegisteredCache() {
     } catch (error) {
         return [];
     }
+}
+
+function refreshWorkersFromRegisteredCache() {
+    const registered = loadWorkersFromRegisteredCache();
+    if (!registered.length) return;
+
+    WORKERS = registered;
+    syncDataWithWorkers();
+    refreshManualSelect();
+    renderWorkerAdmin();
+    renderTable();
+    updateStats();
+    renderDailyReport();
+    renderAllNewsCardStats();
 }
 
 const registeredWorkers = loadWorkersFromRegisteredCache();
@@ -1785,33 +1806,78 @@ function collectQrCandidates(rawText) {
     return [...new Set(candidates.map(v => normalizeQrValue(v).toLowerCase()).filter(Boolean))];
 }
 
+function readQrIdentity(rawText) {
+    const text = normalizeQrValue(rawText);
+    let data = null;
+
+    try {
+        data = JSON.parse(text);
+    } catch (error) {
+        try {
+            const url = new URL(text);
+            data = {
+                id: url.searchParams.get('id') || url.searchParams.get('empId') || url.searchParams.get('employeeId'),
+                name: url.searchParams.get('name') || url.searchParams.get('employeeName') || url.searchParams.get('fullName'),
+                role: url.searchParams.get('role') || url.searchParams.get('position') || url.searchParams.get('job'),
+            };
+        } catch (urlError) {
+            return null;
+        }
+    }
+
+    if (data && typeof data.employee === 'object') {
+        data = data.employee;
+    }
+    if (!data || typeof data !== 'object') return null;
+
+    const id = normalizeQrValue(data.id || data.empId || data.employeeId);
+    const name = normalizeQrValue(data.name || data.employeeName || data.fullName);
+    const role = normalizeQrValue(data.role || data.position || data.job || data.albanTushaal);
+    if (!id && !name && !role) return null;
+
+    return { id, name, role };
+}
+
+function qrIdentityMatchesWorker(worker, identity) {
+    if (!identity) return true;
+    const hasName = Boolean(identity.name);
+    const hasRole = Boolean(identity.role);
+
+    if (hasName !== hasRole) return false;
+    if (!hasName) return true;
+
+    return normalizeQrValue(worker.name).toLowerCase() === identity.name.toLowerCase()
+        && normalizeQrValue(worker.role).toLowerCase() === identity.role.toLowerCase();
+}
+
 function findWorkerFromQr(rawText) {
     const candidates = collectQrCandidates(rawText);
     if (!candidates.length) return null;
+    const identity = readQrIdentity(rawText);
 
     const tableWorkers = getWorkersFromTableBody();
     const sourceWorkers = tableWorkers.length
         ? [...tableWorkers, ...WORKERS.filter(w => !tableWorkers.some(tw => tw.id === w.id))]
         : WORKERS;
 
-    const byId = sourceWorkers.find(w => candidates.includes(normalizeQrValue(w.id).toLowerCase()));
+    const byId = sourceWorkers.find(w => candidates.includes(normalizeQrValue(w.id).toLowerCase())
+        && qrIdentityMatchesWorker(w, identity));
     if (byId) return byId;
 
     const candidateEmpNumbers = candidates
         .map((candidate) => parseEmpNumeric(candidate))
         .filter((num) => Number.isFinite(num));
     if (candidateEmpNumbers.length) {
-        const byEmpNumber = sourceWorkers.find((w) => candidateEmpNumbers.includes(parseEmpNumeric(w.id)));
+        const byEmpNumber = sourceWorkers.find((w) => candidateEmpNumbers.includes(parseEmpNumeric(w.id))
+            && qrIdentityMatchesWorker(w, identity));
         if (byEmpNumber) return byEmpNumber;
     }
 
-    const byName = sourceWorkers.find(w => candidates.includes(normalizeQrValue(w.name).toLowerCase()));
-    if (byName) return byName;
+    if (identity?.name && identity?.role) {
+        return sourceWorkers.find((worker) => qrIdentityMatchesWorker(worker, identity)) || null;
+    }
 
-    return sourceWorkers.find((w) => {
-        const name = normalizeQrValue(w.name).toLowerCase();
-        return candidates.some((candidate) => candidate.includes(name) || name.includes(candidate));
-    }) || null;
+    return null;
 }
 
 const qrDeviceInput = document.getElementById('qr-device-input');
@@ -2437,6 +2503,11 @@ if (!restored) {
     renderAllNewsCardStats();
 }
 renderAggregateSummary();
+
+window.addEventListener('storage', function (event) {
+    if (event.key !== 'workersCustom_v1' && event.key !== 'registeredWorkers_v1') return;
+    refreshWorkersFromRegisteredCache();
+});
 </script>
 </body>
 </html>

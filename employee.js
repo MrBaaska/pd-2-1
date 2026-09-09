@@ -584,6 +584,13 @@
 
     document.addEventListener('pointerdown', unlockAudio, { once: true });
     document.addEventListener('keydown', unlockAudio, { once: true });
+    window.addEventListener('storage', function (event) {
+      if (event.key !== CACHE_KEY_WORKERS_CUSTOM) return;
+      if (!loadWorkersFromCustomStore()) return;
+
+      syncRegisteredWorkersFromCurrentSession();
+      renderRegisteredWorkersTab();
+    });
 
     loadWorkers();
   }
