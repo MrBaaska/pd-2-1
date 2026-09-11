@@ -1291,6 +1291,18 @@ let WORKERS = [
     { id: 'EMP0006', name: 'Б.Оргил', role: 'пр-4' },
     { id: 'EMP0007', name: 'Б.Оргил', role: 'пр-4' },
 ];
+const WORKERS_STORAGE_KEY = 'ubtz_workers_autosave_v1';
+
+try {
+    const savedWorkers = JSON.parse(localStorage.getItem(WORKERS_STORAGE_KEY) || 'null');
+    if (Array.isArray(savedWorkers)) {
+        WORKERS = savedWorkers
+            .filter(w => w && w.id && w.name && w.role)
+            .map(w => ({ id: String(w.id), name: String(w.name), role: String(w.role) }));
+    }
+} catch (error) {
+    console.warn('Ажилтны autosave уншигдсангүй', error);
+}
 
 const STATUS_MAP = {
     present: { label: 'Ирсэн',            cls: 's-present' },
@@ -1361,6 +1373,14 @@ function getNextWorkerId() {
     return `EMP${String(max + 1).padStart(3, '0')}`;
 }
 
+function saveWorkersAutosave() {
+    try {
+        localStorage.setItem(WORKERS_STORAGE_KEY, JSON.stringify(WORKERS));
+    } catch (error) {
+        console.warn('Ажилтны autosave хадгалагдсангүй', error);
+    }
+}
+
 function syncDataWithWorkers() {
     const workerIds = new Set(WORKERS.map(w => w.id));
 
@@ -1424,6 +1444,7 @@ function addWorker() {
     }
 
     WORKERS.push({ id: getNextWorkerId(), name, role: role || 'Тодорхойгүй' });
+    saveWorkersAutosave();
     syncDataWithWorkers();
     refreshManualSelect();
     renderWorkerAdmin();
@@ -1446,6 +1467,7 @@ function editWorker(empId) {
 
     worker.name = newName.trim() || worker.name;
     worker.role = newRole.trim() || worker.role;
+    saveWorkersAutosave();
     refreshManualSelect();
     renderWorkerAdmin();
     renderTable();
@@ -1460,6 +1482,7 @@ function deleteWorker(empId) {
     if (!confirm(`${worker.name} - устгах уу?`)) return;
 
     WORKERS = WORKERS.filter(w => w.id !== empId);
+    saveWorkersAutosave();
     syncDataWithWorkers();
     refreshManualSelect();
     renderWorkerAdmin();
