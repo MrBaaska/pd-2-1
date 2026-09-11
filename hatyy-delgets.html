@@ -59,6 +59,52 @@
             justify-content: center;
             gap: 0.35rem;
         }
+        .tool-name-cell {
+            min-width: 16rem;
+        }
+        .tool-name-cell__content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+        .tool-name-cell__actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .tool-name-cell__action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.8rem;
+            height: 1.8rem;
+            border-radius: 9999px;
+            background-color: #e2e8f0;
+            color: #334155;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .tool-name-cell__action:hover {
+            background-color: #cbd5e1;
+        }
+        .tool-name-cell__action--delete {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+        .tool-name-cell__action--delete:hover {
+            background-color: #fecaca;
+        }
+        .tool-name-input {
+            width: 100%;
+            border: 1px solid #2563eb;
+            border-radius: 0.375rem;
+            padding: 0.45rem 0.6rem;
+            outline: none;
+        }
+        .number-cell__add {
+            font-weight: 600;
+            color: #2563eb;
+        }
         .number-cell__delete {
             display: inline-flex;
             align-items: center;
@@ -73,70 +119,6 @@
         }
         .number-cell__delete:hover {
             background-color: #fecaca;
-        }
-        .tool-name-cell {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.5rem;
-        }
-        .edit-tools-panel {
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-            padding: 0.875rem 1rem;
-            border: 1px solid #fde68a;
-            border-radius: 0.75rem;
-            background: #fffbeb;
-        }
-        .edit-tools-panel.show {
-            display: flex;
-            flex-wrap: wrap;
-        }
-        .edit-tools-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        .table-action-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0.5rem;
-            padding: 0.35rem 0.65rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            line-height: 1.2;
-            transition: background-color 0.2s ease, color 0.2s ease;
-        }
-        .table-action-button--neutral {
-            color: #1d4ed8;
-            background: #dbeafe;
-        }
-        .table-action-button--neutral:hover {
-            background: #bfdbfe;
-        }
-        .table-action-button--danger {
-            color: #b91c1c;
-            background: #fee2e2;
-        }
-        .table-action-button--danger:hover {
-            background: #fecaca;
-        }
-        .table-action-button--success {
-            color: #166534;
-            background: #dcfce7;
-        }
-        .table-action-button--success:hover {
-            background: #bbf7d0;
-        }
-        .table-action-group {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.35rem;
         }
         .stat-value--editable {
             cursor: text;
@@ -211,20 +193,19 @@
         </div>
 
         <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
                 <h2 class="text-xl font-bold text-gray-800">
                     Багажны жагсаалт
                 </h2>
-                <button id="toggleEditMode" class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-                    <i data-lucide="edit-2" class="icon edit-icon" data-size="18"></i>
-                    <span class="edit-text">Засах</span>
-                </button>
-            </div>
-
-            <div id="editToolsPanel" class="edit-tools-panel" aria-hidden="true">
-                <p class="text-sm text-amber-900">Засах горимд багажны нэр, дугаар болон мөрүүдийг удирдана.</p>
-                <div class="edit-tools-actions">
-                    <button id="addToolButton" type="button" class="table-action-button table-action-button--success">Шинэ багаж нэмэх</button>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button id="addToolButton" type="button" class="hidden flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">
+                        <i data-lucide="plus" class="icon" data-size="18"></i>
+                        <span>Багаж нэмэх</span>
+                    </button>
+                    <button id="toggleEditMode" class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                        <i data-lucide="edit-2" class="icon edit-icon" data-size="18"></i>
+                        <span class="edit-text">Засах</span>
+                    </button>
                 </div>
             </div>
 
@@ -240,28 +221,6 @@
         <div class="mt-6 bg-white rounded-lg shadow-lg p-6">
             <h2 class="text-lg font-bold text-gray-800 mb-4">Ашиглалтын бүртгэлийн түүх</h2>
             <div id="usageHistoryDuplicate"></div>
-        </div>
-
-        <div id="pd5Section" class="mt-6 hidden bg-white rounded-lg shadow-lg p-6">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
-                <div>
-                    <h2 class="text-lg font-bold text-gray-800">pd-2 ирсэн мэдээлэл</h2>
-                    <p id="pd5Meta" class="text-sm text-gray-500">Мэдээлэл ачаалагдаагүй байна.</p>
-                </div>
-                <button id="refreshPd5Data" type="button" class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-white transition hover:bg-slate-800">
-                    <i data-lucide="refresh-cw" class="icon" data-size="18"></i>
-                    <span>Шинэчлэх</span>
-                </button>
-            </div>
-            <div id="pd5Status" class="mb-4 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-600">
-                pd-2 мэдээлэл татаж байна...
-            </div>
-            <div id="pd5TableWrap" class="overflow-x-auto">
-                <table class="w-full border-collapse text-sm">
-                    <thead id="pd5TableHead"></thead>
-                    <tbody id="pd5TableBody"></tbody>
-                </table>
-            </div>
         </div>
     </div>
 
@@ -297,6 +256,7 @@
         let isEditingUsageTotal = false;
         let editMode = false;
         let editingCellKey = null;
+        let editingToolNameId = null;
         let selectedRegistrantName = '';
         let html5QrCode = null;
         let qrScanInProgress = false;
@@ -308,12 +268,11 @@
         const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzEZ28txc51rzR74sh8f7Yrl5-__uL1JYOE2KkbSiknfp_vUx-m4Ku_YQzkkaiW8xx9/exec';
         const FALLBACK_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZV214_EA2YvQtNh2rYFQOaWj7JMt9BkvEw7pn1L7BlTw7_iWTyWZrVkxHIntNHgZQ/exec';
-        const PD5_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx9zZZP7zseUP0yXFmIGdMGuBoZnflByURnbXja7f3SaH-KEOyxQf3V-7CWkLkOfNwS/exec';
-        const PD5_SHEET_NAME = 'pd-2';
-        const PD5_SOURCE_LABEL = 'pd-2';
+        const PD3_SHEET_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWCI6xEW3Hpzc05rAiLO_5d7n34HYK2NmcIdxrKs_EThl_4EOWfHAVtXlVRmYyMkYe/exec';
         const KNOWN_TOOL_ACTIONS = [
             'Ажилд ашиглах',
             'Засварт өгсөн',
+            'Томилолт',
             'Томилолтонд явуулсан',
             'Стандарт бус',
             'Бусад'
@@ -327,11 +286,10 @@
         const SHEETS_SYNC_EVENT_TYPE = 'hatyy_usage';
         const SHEETS_POLL_INTERVAL_MS = 5000;
         const CURRENT_USAGE_SESSION_GAP_MS = 60 * 60 * 1000;
+        const PD3_SNAPSHOT_SCHEMA_VERSION = 'pd3-v2';
         let sheetsPollTimer = null;
         let isFetchingSheetState = false;
         let lastAppliedSheetVersion = '';
-        let pd5Records = [];
-        let pd5Headers = [];
 
         function ensureUsageTimestamps() {
             usageData.forEach(entry => {
@@ -415,46 +373,16 @@
             return tools.find(tool => tool.id === toolId);
         }
 
-        function getToolIndexById(toolId) {
-            return tools.findIndex(tool => tool.id === toolId);
-        }
-
-        function getNextToolId() {
-            return tools.reduce((maxId, tool) => {
-                const numericId = Number(tool.id);
-                return Number.isFinite(numericId) ? Math.max(maxId, numericId) : maxId;
-            }, 0) + 1;
-        }
-
-        function getRemovedStatuses(tool) {
-            return tool.numbers.map((_, idx) => Boolean(removedItems[`${tool.id}-${idx}`]));
-        }
-
-        function replaceRemovedStatuses(toolId, statuses) {
-            Object.keys(removedItems)
-                .filter(key => key.startsWith(`${toolId}-`))
-                .forEach(key => delete removedItems[key]);
-
-            statuses.forEach((isRemoved, idx) => {
-                if (isRemoved) {
-                    removedItems[`${toolId}-${idx}`] = true;
-                }
-            });
-        }
-
-        function clearRemovedStatuses(toolId) {
-            Object.keys(removedItems)
-                .filter(key => key.startsWith(`${toolId}-`))
-                .forEach(key => delete removedItems[key]);
-        }
-
         function isDuplicateNumber(tool, candidateNumber, currentIndex) {
             return tool.numbers.some((number, idx) => idx !== currentIndex && number === candidateNumber);
         }
 
-        function isDuplicateToolName(candidateName, currentToolId = null) {
-            const normalizedCandidate = String(candidateName || '').trim().toLowerCase();
-            return tools.some(tool => tool.id !== currentToolId && String(tool.name || '').trim().toLowerCase() === normalizedCandidate);
+        function isDuplicateToolName(candidateName, currentToolId) {
+            return tools.some(tool => tool.id !== currentToolId && tool.name === candidateName);
+        }
+
+        function getNextToolId() {
+            return tools.reduce((maxId, tool) => Math.max(maxId, Number(tool.id) || 0), 0) + 1;
         }
 
         function syncEditedToolNameReferences(oldName, newName) {
@@ -462,6 +390,15 @@
                 if (entry.name === oldName) {
                     entry.name = newName;
                 }
+            });
+        }
+
+        function removeToolUsageReferences(toolName) {
+            usageData = usageData.map(entry => {
+                if (entry.name === toolName && !entry.deleted) {
+                    return { ...entry, deleted: true };
+                }
+                return entry;
             });
         }
 
@@ -486,15 +423,6 @@
         function removeEditedNumberReferences(tool, numberToRemove) {
             usageData = usageData.map(entry => {
                 if (entry.name === tool.name && entry.number === numberToRemove && !entry.deleted) {
-                    return { ...entry, deleted: true };
-                }
-                return entry;
-            });
-        }
-
-        function removeEditedToolReferences(tool) {
-            usageData = usageData.map(entry => {
-                if (entry.name === tool.name && !entry.deleted) {
                     return { ...entry, deleted: true };
                 }
                 return entry;
@@ -535,6 +463,7 @@
         const usageHistoryTabButton = document.getElementById('usageHistoryTab');
         const usageLogPanel = document.getElementById('usageLogPanel');
         const usageHistoryPanel = document.getElementById('usageHistoryPanel');
+        const addToolButton = document.getElementById('addToolButton');
 
         // ===================================
         // 1. Local Storage-ийн функцууд
@@ -564,14 +493,49 @@
             ensureUsageTimestamps();
         }
 
+        function compactUsageDataForStorage(entries) {
+            if (!Array.isArray(entries)) {
+                return [];
+            }
+
+            return entries.map(entry => ({
+                id: entry.id,
+                name: entry.name,
+                number: entry.number,
+                action: entry.action,
+                comment: entry.comment,
+                registrant: entry.registrant,
+                date: entry.date,
+                timestamp: entry.timestamp,
+                deleted: Boolean(entry.deleted),
+                source: entry.source || ''
+            }));
+        }
+
+        function setLocalStorageItemSafe(key, value) {
+            try {
+                localStorage.setItem(key, value);
+                return true;
+            } catch (error) {
+                if (error && error.name === 'QuotaExceededError') {
+                    return false;
+                }
+                throw error;
+            }
+        }
+
         function saveState() {
             if (!ALLOW_MANUAL_NUMBER_EDIT && DISPLAY_ONLY) {
                 return;
             }
 
-            localStorage.setItem('tools', JSON.stringify(tools));
-            localStorage.setItem('removedItems', JSON.stringify(removedItems));
-            localStorage.setItem('usageData', JSON.stringify(usageData));
+            setLocalStorageItemSafe('tools', JSON.stringify(tools));
+            setLocalStorageItemSafe('removedItems', JSON.stringify(removedItems));
+
+            const compactUsageData = compactUsageDataForStorage(usageData);
+            if (!setLocalStorageItemSafe('usageData', JSON.stringify(compactUsageData))) {
+                localStorage.removeItem('usageData');
+            }
         }
 
         function parseEditableNumber(value) {
@@ -673,6 +637,7 @@
             }, 0);
 
             return [
+                PD3_SNAPSHOT_SCHEMA_VERSION,
                 String(record.savedAt || ''),
                 String(record.eventId || ''),
                 String(latestUsageTimestamp),
@@ -791,6 +756,165 @@
             }
 
             return parsed;
+        }
+
+        function normalizeRecordKey(value) {
+            return String(value || '')
+                .toLowerCase()
+                .replace(/\s+/g, '')
+                .replace(/[_-]/g, '')
+                .trim();
+        }
+
+        function getRecordField(record, candidates) {
+            if (!record || typeof record !== 'object') {
+                return '';
+            }
+
+            for (const candidate of candidates) {
+                if (candidate in record && record[candidate] != null && String(record[candidate]).trim() !== '') {
+                    return record[candidate];
+                }
+            }
+
+            const normalizedCandidates = candidates.map(normalizeRecordKey);
+            for (const [key, value] of Object.entries(record)) {
+                if (normalizedCandidates.includes(normalizeRecordKey(key)) && value != null && String(value).trim() !== '') {
+                    return value;
+                }
+            }
+
+            return '';
+        }
+
+        function isPd3SheetRecord(record) {
+            if (!record || typeof record !== 'object') {
+                return false;
+            }
+
+            const keySet = new Set(Object.keys(record).map(normalizeRecordKey));
+            const expectedKeys = [
+                'бүртгэсэногноо',
+                'ажилтнынэр',
+                'танилцсан',
+                'зааварчилгаанынэр',
+                'зааварчилгааөгсөн'
+            ];
+
+            return expectedKeys.filter(key => keySet.has(key)).length >= 3;
+        }
+
+        function normalizePd1SheetRecord(record, rowIndex) {
+            if (!record || typeof record !== 'object') {
+                return null;
+            }
+
+            const rawColumns = Object.keys(record).filter(key => key !== 'rowNumber');
+            const orderedValues = rawColumns
+                .filter(key => key !== 'rowNumber')
+                .map(key => record[key])
+                .filter(value => value != null && String(value).trim() !== '');
+            const toolNameOptions = (tools.length ? tools : initialTools).map(tool => tool.name);
+            const normalizedOrderedValues = orderedValues.map(value => String(value || '').trim());
+            const detectedAction = normalizedOrderedValues.find(value => KNOWN_TOOL_ACTIONS.includes(value)) || '';
+            const detectedToolName = normalizedOrderedValues.find(value => toolNameOptions.includes(value)) || '';
+            const parsedDateCandidates = normalizedOrderedValues
+                .map((value, index) => ({
+                    index,
+                    value,
+                    timestamp: Date.parse(value)
+                }))
+                .filter(candidate => !Number.isNaN(candidate.timestamp));
+            const latestParsedDateCandidate = parsedDateCandidates.length
+                ? parsedDateCandidates[parsedDateCandidates.length - 1]
+                : null;
+            const numericCandidatesBeforeDate = latestParsedDateCandidate
+                ? normalizedOrderedValues
+                    .slice(0, latestParsedDateCandidate.index)
+                    .filter(value => /^\d+$/.test(value))
+                : [];
+
+            const fallbackValueAt = index => orderedValues[index] != null ? orderedValues[index] : '';
+            const rawDate = getRecordField(record, ['savedAt', 'SavedAt', 'date', 'Date', 'огноо', 'Огноо', 'timestamp'])
+                || getRecordField(record, ['Бүртгэсэн огноо', 'Бүртгэсэн Огноо', 'Зааварчилгааны огноо', 'Зааварчилгааны Огноо'])
+                || (latestParsedDateCandidate ? latestParsedDateCandidate.value : '')
+                || fallbackValueAt(0);
+            const rawName = getRecordField(record, ['name', 'Name', 'нэр', 'Нэр', 'toolName', 'Багажны нэр'])
+                || getRecordField(record, ['Ажилтны нэр', 'Ажилтын нэр', 'Багажны нэр'])
+                || detectedToolName
+                || fallbackValueAt(1)
+                || fallbackValueAt(0);
+            const rawNumber = getRecordField(record, ['number', 'Number', 'дугаар', 'Дугаар', 'toolNumber'])
+                || getRecordField(record, ['Танилцсан', 'Танилцуулсан', 'Serial', 'Сери'])
+                || numericCandidatesBeforeDate[0]
+                || fallbackValueAt(2)
+                || '';
+            const rawAction = getRecordField(record, ['toolAction', 'ToolAction', 'action', 'Action', 'зорилго', 'Зорилго'])
+                || getRecordField(record, ['Зааварчилгааны нэр', 'Зааварчилгааны Нэр'])
+                || detectedAction
+                || 'Ажилд ашиглах';
+            const rawComment = getRecordField(record, ['comment', 'Comment', 'тайлбар', 'Тайлбар'])
+                || getRecordField(record, ['Зааварчилгаа өгсөн', 'Зааварчилгаа Өгсөн'])
+                || (detectedAction
+                    ? (normalizedOrderedValues[normalizedOrderedValues.indexOf(detectedAction) + 1] || '')
+                    : '')
+                || '';
+            const rawRegistrant = getRecordField(record, ['registrant', 'Registrant', 'бүртгэл', 'Бүртгэл', 'registeredBy'])
+                || getRecordField(record, ['Зааварчилгааны огноо', 'Зааварчилгааны Огноо'])
+                || '';
+
+            const parsedTimestamp = Date.parse(String(rawDate || ''));
+            const rowNumber = Number(record.rowNumber || rowIndex + 1);
+
+            return {
+                id: `pd3-${rowNumber}-${String(rawDate || Date.now())}`,
+                name: String(rawName || 'Тодорхойгүй').trim(),
+                number: String(rawNumber || '-').trim() || '-',
+                action: String(rawAction || 'Ажилд ашиглах').trim() || 'Ажилд ашиглах',
+                comment: String(rawComment || '').trim(),
+                registrant: String(rawRegistrant || '').trim(),
+                date: String(rawDate || 'Огноо тодорхойгүй').trim() || 'Огноо тодорхойгүй',
+                timestamp: Number.isNaN(parsedTimestamp) ? rowNumber : parsedTimestamp,
+                deleted: false,
+                source: 'pd-3-sheet',
+                rawRecord: record,
+                rawColumns,
+                rawValues: Object.values(record)
+            };
+        }
+
+        function buildSnapshotFromPd1Json(payload) {
+            const rows = Array.isArray(payload)
+                ? payload
+                : (Array.isArray(payload?.rows) ? payload.rows : (Array.isArray(payload?.data) ? payload.data : []));
+
+            if (!rows.length || !rows.some(isPd3SheetRecord)) {
+                return null;
+            }
+
+            const usageRows = rows
+                .map((row, rowIndex) => normalizePd1SheetRecord(row, rowIndex))
+                .filter(Boolean)
+                .reverse();
+
+            if (!usageRows.length) {
+                return null;
+            }
+
+            return {
+                record: {
+                    source: 'pd-3-sheet',
+                    savedAt: usageRows[0].date || ''
+                },
+                snapshot: {
+                    tools: tools.length ? tools : initialTools,
+                    removedItems: {},
+                    usageData: usageRows
+                },
+                usageData: usageRows,
+                tools: tools.length ? tools : initialTools,
+                removedItems: {}
+            };
         }
 
         function fetchJsonpFromUrl(url) {
@@ -961,7 +1085,6 @@
 
         function buildUsageRowMarkup(entry, index, cellPaddingClass = 'p-3') {
             const rowClass = entry.deleted ? 'opacity-60 line-through text-red-600' : 'hover:bg-gray-50';
-            const displayDate = formatPd5DateValue(entry.date);
             return `
                 <tr class="${rowClass}">
                     <td class="border border-gray-300 ${cellPaddingClass} text-center">${index + 1}</td>
@@ -969,214 +1092,10 @@
                     <td class="border border-gray-300 ${cellPaddingClass} text-center">${entry.number}</td>
                     <td class="border border-gray-300 ${cellPaddingClass}">${entry.action || 'Ажилд ашиглах'}</td>
                     <td class="border border-gray-300 ${cellPaddingClass}">${entry.comment || '-'}</td>
-                    <td class="border border-gray-300 ${cellPaddingClass} text-sm text-gray-600">${displayDate || '-'}</td>
+                    <td class="border border-gray-300 ${cellPaddingClass} text-sm text-gray-600">${formatDisplayDate(entry.date)}</td>
                     <td class="border border-gray-300 ${cellPaddingClass}">${entry.registrant || '-'}</td>
                 </tr>
             `;
-        }
-
-        function normalizePd5Records(payload) {
-            if (!payload) {
-                return [];
-            }
-
-            if (Array.isArray(payload)) {
-                return payload;
-            }
-
-            if (Array.isArray(payload.data)) {
-                return payload.data;
-            }
-
-            if (Array.isArray(payload.records)) {
-                return payload.records;
-            }
-
-            return [];
-        }
-
-        function buildPd5TableHeaders(records) {
-            if (!records.length) {
-                return [];
-            }
-
-            const firstRecord = records[0];
-            const keys = Object.keys(firstRecord);
-            const orderedKeys = [];
-
-            if (keys.includes('rowNumber')) {
-                orderedKeys.push('rowNumber');
-            }
-
-            keys.forEach(key => {
-                if (key !== 'rowNumber') {
-                    orderedKeys.push(key);
-                }
-            });
-
-            return orderedKeys;
-        }
-
-        function mapPdRecordToUsageEntry(record, index) {
-            if (!record || typeof record !== 'object') {
-                return null;
-            }
-
-            const date = String(record['Огноо'] || record.date || '').trim();
-            const timestamp = Date.parse(date);
-
-            return {
-                id: `pd2-${record.rowNumber || index + 1}`,
-                name: String(record['Багажны нэр'] || record.name || 'Тодорхойгүй').trim() || 'Тодорхойгүй',
-                number: String(record['Дугаар'] || record.number || '-').trim() || '-',
-                action: String(record['Зорилго'] || record.action || 'Ажилд ашиглах').trim() || 'Ажилд ашиглах',
-                comment: String(record['Тайлбар'] || record.comment || '').trim(),
-                registrant: String(record['Бүртгэгч'] || record.registrant || '-').trim() || '-',
-                date: date || 'Огноо тодорхойгүй',
-                timestamp: Number.isNaN(timestamp) ? -(index + 1) : timestamp,
-                deleted: false
-            };
-        }
-
-        function getUsageHistoryEntries() {
-            if (pd5Records.length) {
-                return pd5Records
-                    .map(mapPdRecordToUsageEntry)
-                    .filter(Boolean);
-            }
-
-            return usageData;
-        }
-
-        function formatPd5DateValue(value) {
-            if (value instanceof Date && !Number.isNaN(value.getTime())) {
-                return value.toLocaleString('en-US', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: true
-                }).replace(',', '');
-            }
-
-            const normalizedValue = typeof value === 'string' ? value.trim() : '';
-            if (!normalizedValue) {
-                return '';
-            }
-
-            const parsed = new Date(normalizedValue);
-            if (Number.isNaN(parsed.getTime())) {
-                return normalizedValue;
-            }
-
-            const year = parsed.getFullYear();
-            const month = String(parsed.getMonth() + 1).padStart(2, '0');
-            const day = String(parsed.getDate()).padStart(2, '0');
-            const time = parsed.toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true
-            });
-
-            return `${year}-${month}-${day} ${time}`;
-        }
-
-        function renderPd5Records(records) {
-            const tableHead = document.getElementById('pd5TableHead');
-            const tableBody = document.getElementById('pd5TableBody');
-            const meta = document.getElementById('pd5Meta');
-
-            if (!tableHead || !tableBody || !meta) {
-                return;
-            }
-
-            pd5Records = Array.isArray(records) ? records : [];
-            pd5Headers = buildPd5TableHeaders(pd5Records);
-            renderUsageHistory();
-
-            if (!pd5Records.length) {
-                tableHead.innerHTML = `
-                    <tr class="bg-slate-100 text-slate-700">
-                        <th class="border border-slate-300 px-3 py-2 text-center">Мэдээлэл</th>
-                    </tr>
-                `;
-                tableBody.innerHTML = `
-                    <tr>
-                        <td class="border border-slate-300 px-3 py-8 text-center text-slate-500">pd-2 дээр мэдээлэл байхгүй байна</td>
-                    </tr>
-                `;
-                meta.textContent = '0 мөр мэдээлэл';
-                return;
-            }
-
-            tableHead.innerHTML = `
-                <tr class="bg-slate-100 text-slate-700">
-                    ${pd5Headers.map(header => `<th class="border border-slate-300 px-3 py-2 text-left whitespace-nowrap">${escapeHtml(header)}</th>`).join('')}
-                </tr>
-            `;
-
-            tableBody.innerHTML = pd5Records.map(record => `
-                <tr class="hover:bg-slate-50 align-top">
-                    ${pd5Headers.map(header => {
-                        const value = record && Object.prototype.hasOwnProperty.call(record, header) ? record[header] : '';
-                        const displayValue = value == null ? '' : formatPd5DateValue(value);
-                        return `<td class="border border-slate-300 px-3 py-2 whitespace-nowrap">${displayValue !== '' ? escapeHtml(displayValue) : '<span class="text-slate-400">-</span>'}</td>`;
-                    }).join('')}
-                </tr>
-            `).join('');
-
-            meta.textContent = `${pd5Records.length} мөр мэдээлэл`;
-        }
-
-        function setPd5Status(message, tone = 'neutral') {
-            const status = document.getElementById('pd5Status');
-            if (!status) {
-                return;
-            }
-
-            const styles = {
-                neutral: 'bg-slate-50 text-slate-600',
-                loading: 'bg-blue-50 text-blue-700',
-                success: 'bg-emerald-50 text-emerald-700',
-                warning: 'bg-amber-50 text-amber-700',
-                error: 'bg-red-50 text-red-700'
-            };
-
-            status.className = `mb-4 rounded-lg px-4 py-3 text-sm ${styles[tone] || styles.neutral}`;
-            status.textContent = message;
-        }
-
-        async function fetchPd5Records() {
-            setPd5Status(`${PD5_SOURCE_LABEL} мэдээлэл татаж байна...`, 'loading');
-
-            try {
-                const response = await fetch(`${PD5_SCRIPT_URL}?sheet=${encodeURIComponent(PD5_SHEET_NAME)}&t=${Date.now()}`, {
-                    method: 'GET',
-                    cache: 'no-store'
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-
-                const payload = await response.json();
-                const records = normalizePd5Records(payload);
-                renderPd5Records(records);
-
-                if (!records.length) {
-                    setPd5Status(`${PD5_SOURCE_LABEL} дээр мэдээлэл олдсонгүй.`, 'warning');
-                    return false;
-                }
-
-                setPd5Status(`${PD5_SOURCE_LABEL} мэдээлэл амжилттай ачаалагдлаа.`, 'success');
-                return true;
-            } catch (error) {
-                console.error(`${PD5_SOURCE_LABEL} мэдээлэл татахад алдаа гарлаа:`, error);
-                renderPd5Records([]);
-                setPd5Status(`${PD5_SOURCE_LABEL} мэдээлэл татаж чадсангүй: ${error.message || 'тодорхойгүй'}`, 'error');
-                return false;
-            }
         }
 
         function setActiveUsageView(view) {
@@ -1207,55 +1126,11 @@
             setSyncStatus('Мэдээлэл татаж байна...', 'loading');
 
             try {
-                let result = null;
-                let lastError = null;
+                const result = await fetchJsonFromUrl(`${PD3_SHEET_SCRIPT_URL}?sheet=pd-3&t=${Date.now()}`);
+                const normalizedSnapshot = buildSnapshotFromPd1Json(result);
 
-                try {
-                    result = await fetchSheetCsvSnapshot();
-                } catch (sheetError) {
-                    lastError = sheetError;
-                }
-
-                const sourceUrls = [SCRIPT_URL, FALLBACK_SCRIPT_URL].filter(Boolean);
-                const requestUrls = sourceUrls.flatMap(sourceUrl => [
-                    `${sourceUrl}?action=rows&t=${Date.now()}`,
-                    `${sourceUrl}?action=latest&t=${Date.now()}`,
-                    `${sourceUrl}?t=${Date.now()}`
-                ]);
-
-                if (!result) {
-                    for (const requestUrl of requestUrls) {
-                        try {
-                            result = await fetchJsonFromUrl(requestUrl);
-                            if (result) {
-                                break;
-                            }
-                        } catch (error) {
-                            lastError = error;
-
-                            try {
-                                result = await fetchJsonpFromUrl(requestUrl);
-                                if (result) {
-                                    break;
-                                }
-                            } catch (jsonpError) {
-                                lastError = jsonpError;
-                            }
-                        }
-                    }
-                }
-
-                if (!result) {
-                    if (lastError) {
-                        throw lastError;
-                    }
-                    setSyncStatus('Энэ URL одоогоор хоосон хариу өгч байна.', 'warning');
-                    return false;
-                }
-
-                const normalizedSnapshot = normalizeRemoteSnapshot(result);
                 if (!normalizedSnapshot) {
-                    setSyncStatus('Ирсэн өгөгдлийн бүтэц танигдсангүй.', 'warning');
+                    setSyncStatus('pd-3 шитнээс ашиглах мөр олдсонгүй.', 'warning');
                     return false;
                 }
 
@@ -1401,6 +1276,28 @@
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#39;');
+        }
+
+        function formatDisplayDate(value) {
+            if (!value) {
+                return '-';
+            }
+
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) {
+                return escapeHtml(value);
+            }
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            let hours = date.getHours();
+            const minutes = date.getMinutes();
+            const suffix = hours >= 12 ? 'PM' : 'AM';
+
+            hours = hours % 12 || 12;
+
+            return `${year}-${month}-${day} ${hours}:${minutes} ${suffix}`;
         }
 
         function setSelectedRegistrant(name) {
@@ -1586,7 +1483,6 @@
             tbody.innerHTML = '';
             const activeUsageKeys = getActiveUsageKeySet();
             const maxColumns = Math.max(10, ...tools.map(tool => tool.numbers.length));
-            const actionColumnMarkup = editMode ? '<th class="border border-gray-300 p-3 text-center">Үйлдэл</th>' : '';
 
             // Толгой хэсэг (Header)
             thead.innerHTML = `
@@ -1597,7 +1493,6 @@
                         Багажны дугаар
                     </th>
                     <th class="border border-gray-300 p-3 text-center bg-blue-50">Тоо</th>
-                    ${actionColumnMarkup}
                 </tr>
             `;
 
@@ -1607,14 +1502,28 @@
                 tr.className = "hover:bg-gray-50";
 
                 const count = getAvailableCountByTool(tool, activeUsageKeys);
+                const isEditingToolName = editingToolNameId === tool.id;
 
                 let rowHTML = `
                     <td class="border border-gray-300 p-3 text-center">${tool.id}</td>
-                    <td class="border border-gray-300 p-3 font-medium">
-                        <div class="tool-name-cell">
-                            <span>${escapeHtml(tool.name)}</span>
-                            ${editMode ? `<button type="button" class="table-action-button table-action-button--neutral" onclick="editToolName(${tool.id})">Нэр засах</button>` : ''}
-                        </div>
+                    <td class="border border-gray-300 p-3 font-medium tool-name-cell">
+                        ${isEditingToolName ? `
+                            <input type="text" class="tool-name-input" value="${tool.name || ''}" maxlength="80" data-tool-name-input="${tool.id}" />
+                        ` : `
+                            <div class="tool-name-cell__content">
+                                <span>${tool.name || ''}</span>
+                                ${ALLOW_MANUAL_NUMBER_EDIT && editMode ? `
+                                    <span class="tool-name-cell__actions">
+                                        <button type="button" class="tool-name-cell__action" onclick="startToolNameEdit(${tool.id}, event)" title="Нэр засах">
+                                            <i data-lucide="pencil" class="icon" data-size="14"></i>
+                                        </button>
+                                        <button type="button" class="tool-name-cell__action tool-name-cell__action--delete" onclick="deleteTool(${tool.id}, event)" title="Мөр устгах">
+                                            <i data-lucide="trash-2" class="icon" data-size="14"></i>
+                                        </button>
+                                    </span>
+                                ` : ''}
+                            </div>
+                        `}
                     </td>
                 `;
 
@@ -1652,7 +1561,7 @@
                         >
                             ${isEditing ? `<input type="text" class="number-input" value="${number || ''}" maxlength="20" data-edit-input="${key}" />` : `
                                 <div class="number-cell__content">
-                                    <span>${escapeHtml(number || '')}</span>
+                                    <span class="${!number && canEdit ? 'number-cell__add' : ''}">${number || (canEdit ? '+ Дугаар' : '')}</span>
                                     ${ALLOW_MANUAL_NUMBER_EDIT && editMode && number && !isRemoved ? `<button type="button" class="number-cell__delete" onclick="deleteNumber(${tool.id}, ${idx}, event)">x</button>` : ''}
                                 </div>
                             `}
@@ -1667,38 +1576,27 @@
                     </td>
                 `;
 
-                if (editMode) {
-                    rowHTML += `
-                        <td class="border border-gray-300 p-3 text-center">
-                            <div class="table-action-group">
-                                <button type="button" class="table-action-button table-action-button--success" onclick="addNumber(${tool.id})">Дугаар нэмэх</button>
-                                <button type="button" class="table-action-button table-action-button--danger" onclick="deleteTool(${tool.id})">Устгах</button>
-                            </div>
-                        </td>
-                    `;
-                }
-
                 tr.innerHTML = rowHTML;
                 tbody.appendChild(tr);
             });
             
             // Нийлбэр мөр (Footer)
-            const availableTotal = tools.reduce((total, tool) => total + getAvailableCountByTool(tool, activeUsageKeys), 0);
+                        const availableTotal = tools.reduce((total, tool) => total + getAvailableCountByTool(tool, activeUsageKeys), 0);
             document.getElementById('toolsTableFooter').innerHTML = `
                 <tr class="bg-gray-100 font-bold">
                     <td colspan="${maxColumns + 2}" class="border border-gray-300 p-3 text-right">
                         НИЙЛБЭР:
                     </td>
                     <td class="border border-gray-300 p-3 text-center bg-blue-100">
-                        ${availableTotal}
+                                    ${availableTotal}
                     </td>
-                    ${editMode ? '<td class="border border-gray-300 bg-gray-100"></td>' : ''}
                 </tr>
             `;
 
             // Lucide icons-ийг шинэчлэх
             lucide.createIcons();
             attachEditableCellInteractions();
+            attachEditableToolNameInteractions();
         }
 
         function attachEditableCellInteractions() {
@@ -1743,6 +1641,112 @@
                     commitNumberEdit();
                 }
             });
+        }
+
+        function attachEditableToolNameInteractions() {
+            if (!editingToolNameId) {
+                return;
+            }
+
+            const input = document.querySelector(`[data-tool-name-input="${editingToolNameId}"]`);
+            if (!input) {
+                return;
+            }
+
+            input.focus();
+            input.select();
+            input.addEventListener('click', event => event.stopPropagation());
+            input.addEventListener('dblclick', event => event.stopPropagation());
+            input.addEventListener('keydown', event => {
+                if (event.key === 'Enter') {
+                    commitToolNameEdit();
+                }
+                if (event.key === 'Escape') {
+                    cancelToolNameEdit();
+                }
+            });
+            input.addEventListener('blur', () => {
+                if (editingToolNameId) {
+                    commitToolNameEdit();
+                }
+            });
+        }
+
+        window.startToolNameEdit = (toolId, event) => {
+            event?.stopPropagation();
+            if (!ALLOW_MANUAL_NUMBER_EDIT || !editMode) return;
+
+            if (editingCellKey) {
+                commitNumberEdit();
+            }
+
+            if (editingToolNameId && editingToolNameId !== toolId) {
+                commitToolNameEdit();
+            }
+
+            editingToolNameId = toolId;
+            renderToolsTable();
+        };
+
+        function cancelToolNameEdit() {
+            if (!editingToolNameId) {
+                return;
+            }
+
+            const tool = getToolById(editingToolNameId);
+            if (tool && /^Шинэ багаж \d+$/.test(tool.name) && tool.numbers.length === 0) {
+                tools = tools.filter(item => item.id !== tool.id);
+                editingToolNameId = null;
+                saveState();
+                updateUI();
+                return;
+            }
+
+            editingToolNameId = null;
+            renderToolsTable();
+        }
+
+        function commitToolNameEdit() {
+            if (!editingToolNameId) {
+                return;
+            }
+
+            const toolId = editingToolNameId;
+            const input = document.querySelector(`[data-tool-name-input="${toolId}"]`);
+            const nextName = input ? input.value.trim() : '';
+            const tool = getToolById(toolId);
+            const oldName = tool?.name || '';
+
+            editingToolNameId = null;
+
+            if (!tool) {
+                renderToolsTable();
+                return;
+            }
+
+            if (!nextName) {
+                alert('Багажны нэр хоосон байж болохгүй.');
+                editingToolNameId = toolId;
+                renderToolsTable();
+                return;
+            }
+
+            if (isDuplicateToolName(nextName, toolId)) {
+                alert('Ижил нэртэй багаж давхардах боломжгүй.');
+                editingToolNameId = toolId;
+                renderToolsTable();
+                return;
+            }
+
+            if (nextName === oldName) {
+                renderToolsTable();
+                return;
+            }
+
+            tool.name = nextName;
+            syncEditedToolNameReferences(oldName, nextName);
+            saveState();
+            updateUI();
         }
 
         window.startNumberEdit = (toolId, numIdx) => {
@@ -1793,10 +1797,7 @@
 
             if (!nextNumber) {
                 if (oldNumber) {
-                    const statuses = getRemovedStatuses(tool);
                     tool.numbers.splice(numIdx, 1);
-                    statuses.splice(numIdx, 1);
-                    replaceRemovedStatuses(tool.id, statuses);
                     removeEditedNumberReferences(tool, oldNumber);
                     saveState();
                     updateUI();
@@ -1821,10 +1822,7 @@
                 tool.numbers[numIdx] = nextNumber;
                 syncEditedNumberReferences(tool, oldNumber, nextNumber);
             } else {
-                const statuses = getRemovedStatuses(tool);
                 tool.numbers.splice(numIdx, 0, nextNumber);
-                statuses.splice(numIdx, 0, false);
-                replaceRemovedStatuses(tool.id, statuses);
             }
             saveState();
             updateUI();
@@ -1840,16 +1838,14 @@
                 return;
             }
 
-            const statuses = getRemovedStatuses(tool);
             tool.numbers.splice(numIdx, 1);
-            statuses.splice(numIdx, 1);
-            replaceRemovedStatuses(tool.id, statuses);
             removeEditedNumberReferences(tool, numberToRemove);
             saveState();
             updateUI();
         };
 
-        window.editToolName = (toolId) => {
+        window.deleteTool = (toolId, event) => {
+            event?.stopPropagation();
             if (!ALLOW_MANUAL_NUMBER_EDIT || !editMode) return;
 
             const tool = getToolById(toolId);
@@ -1857,118 +1853,49 @@
                 return;
             }
 
-            if (editingCellKey) {
-                commitNumberEdit();
-            }
-
-            const nextName = prompt('Багажны шинэ нэр оруулна уу:', tool.name);
-            if (nextName == null) {
+            const confirmed = window.confirm(`"${tool.name}" багажийг устгах уу? Холбогдсон идэвхтэй бүртгэлүүд хаагдана.`);
+            if (!confirmed) {
                 return;
             }
 
-            const normalizedName = nextName.trim();
-            if (!normalizedName || normalizedName === tool.name) {
-                return;
-            }
-
-            if (isDuplicateToolName(normalizedName, tool.id)) {
-                alert('Ижил нэртэй багаж аль хэдийн байна. Өөр нэр оруулна уу.');
-                return;
-            }
-
-            const oldName = tool.name;
-            tool.name = normalizedName;
-            syncEditedToolNameReferences(oldName, normalizedName);
-            saveState();
-            updateUI();
-        };
-
-        window.addNumber = (toolId) => {
-            if (!ALLOW_MANUAL_NUMBER_EDIT || !editMode) return;
-
-            const tool = getToolById(toolId);
-            if (!tool) {
-                return;
-            }
-
-            if (editingCellKey) {
-                commitNumberEdit();
-            }
-
-            const nextNumber = prompt(`${tool.name} багажид нэмэх дугаар оруулна уу:`);
-            if (nextNumber == null) {
-                return;
-            }
-
-            const normalizedNumber = nextNumber.trim();
-            if (!normalizedNumber) {
-                return;
-            }
-
-            if (isDuplicateNumber(tool, normalizedNumber, -1)) {
-                alert('Ижил багаж дээр давхардсан дугаар оруулах боломжгүй.');
-                return;
-            }
-
-            tool.numbers.push(normalizedNumber);
-            saveState();
-            updateUI();
-        };
-
-        window.addTool = () => {
-            if (!ALLOW_MANUAL_NUMBER_EDIT || !editMode) return;
-
-            if (editingCellKey) {
-                commitNumberEdit();
-            }
-
-            const nextName = prompt('Шинээр нэмэх багажны нэр оруулна уу:');
-            if (nextName == null) {
-                return;
-            }
-
-            const normalizedName = nextName.trim();
-            if (!normalizedName) {
-                return;
-            }
-
-            if (isDuplicateToolName(normalizedName)) {
-                alert('Ижил нэртэй багаж аль хэдийн байна. Өөр нэр оруулна уу.');
-                return;
-            }
-
-            tools.push({
-                id: getNextToolId(),
-                name: normalizedName,
-                numbers: []
+            removeToolUsageReferences(tool.name);
+            Object.keys(removedItems).forEach(key => {
+                if (key.startsWith(`${toolId}-`)) {
+                    delete removedItems[key];
+                }
             });
+            tools = tools.filter(item => item.id !== toolId);
+            if (editingToolNameId === toolId) {
+                editingToolNameId = null;
+            }
             saveState();
             updateUI();
         };
 
-        window.deleteTool = (toolId) => {
-            if (!ALLOW_MANUAL_NUMBER_EDIT || !editMode) return;
-
-            const toolIndex = getToolIndexById(toolId);
-            const tool = toolIndex >= 0 ? tools[toolIndex] : null;
-            if (!tool) {
-                return;
-            }
-
-            if (!confirm(`"${tool.name}" багажийг бүх дугаартай нь устгах уу?`)) {
+        function addTool() {
+            if (!ALLOW_MANUAL_NUMBER_EDIT || !editMode) {
                 return;
             }
 
             if (editingCellKey) {
                 commitNumberEdit();
             }
+            if (editingToolNameId) {
+                commitToolNameEdit();
+            }
 
-            tools.splice(toolIndex, 1);
-            removeEditedToolReferences(tool);
-            clearRemovedStatuses(toolId);
+            const nextId = getNextToolId();
+            const newTool = {
+                id: nextId,
+                name: `Шинэ багаж ${nextId}`,
+                numbers: []
+            };
+
+            tools.push(newTool);
+            editingToolNameId = nextId;
             saveState();
             updateUI();
-        };
+        }
 
         // Ашиглалтын бүртгэлийг зурах
         function renderUsageTable() {
@@ -2059,9 +1986,7 @@
             if (!historyDivs.length) {
                 return;
             }
-            const historyEntries = getUsageHistoryEntries();
-
-            if (!historyEntries.length) {
+            if (!usageData.length) {
                 const emptyMarkup = `
                     <div class="overflow-x-auto">
                         <table class="w-full border-collapse">
@@ -2102,7 +2027,7 @@
                 return;
             }
 
-            const sortedEntries = [...historyEntries].sort((a, b) => getEntryTimestamp(b) - getEntryTimestamp(a));
+            const sortedEntries = [...usageData].sort((a, b) => getEntryTimestamp(b) - getEntryTimestamp(a));
 
             let html = `
                 <div class="overflow-x-auto">
@@ -2234,21 +2159,15 @@
         const editButton = document.getElementById('toggleEditMode');
         const editIcon = document.querySelector('.edit-icon');
         const editText = document.querySelector('.edit-text');
-        const editToolsPanel = document.getElementById('editToolsPanel');
-        const addToolButton = document.getElementById('addToolButton');
-        const refreshPd5Button = document.getElementById('refreshPd5Data');
 
         function updateEditButton() {
             if (!ALLOW_MANUAL_NUMBER_EDIT) {
                 editButton.classList.add('hidden');
-                editToolsPanel?.classList.remove('show');
-                editToolsPanel?.setAttribute('aria-hidden', 'true');
                 return;
             }
 
             editButton.classList.remove('hidden');
-            editToolsPanel?.classList.toggle('show', editMode);
-            editToolsPanel?.setAttribute('aria-hidden', String(!editMode));
+            addToolButton?.classList.toggle('hidden', !editMode);
 
             if (editMode) {
                 editIcon.setAttribute('data-lucide', 'save');
@@ -2272,11 +2191,14 @@
             if (editingCellKey) {
                 commitNumberEdit();
             }
+            if (editingToolNameId) {
+                commitToolNameEdit();
+            }
             editMode = !editMode;
             updateEditButton();
             renderToolsTable(); // Засах горимоос хамаарч cell-ийн double click-ийг идэвхжүүлнэ
         });
-        addToolButton?.addEventListener('click', () => window.addTool());
+        addToolButton?.addEventListener('click', addTool);
 
 
         // Формд өөрчлөлт орохыг хянах
@@ -2289,9 +2211,6 @@
         });
         usageLogTabButton?.addEventListener('click', () => setActiveUsageView('log'));
         usageHistoryTabButton?.addEventListener('click', () => setActiveUsageView('history'));
-        refreshPd5Button?.addEventListener('click', () => {
-            fetchPd5Records();
-        });
         if (!DISPLAY_ONLY) {
             scanQrButton?.addEventListener('click', openQrModal);
             clearRegistrantButton?.addEventListener('click', () => setSelectedRegistrant(''));
@@ -2318,7 +2237,6 @@
             setSelectedRegistrant('');
             setSyncStatus('Мэдээлэл татаж байна...', 'loading');
             fetchLatestSheetState();
-            fetchPd5Records();
             startSheetPolling();
         });
 
@@ -2335,7 +2253,6 @@
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {
                 fetchLatestSheetState();
-                fetchPd5Records();
             }
         });
     </script>

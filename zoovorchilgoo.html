@@ -996,7 +996,7 @@
                     <option value="НОГООНТОЛГОЙ">НОГООНТОЛГОЙ</option>
                     <option value="РАШААНТ">РАШААНТ</option>
                     <option value="ДАВААНЫ">ДАВААНЫ</option>
-                    <option value="ЭМЭЭЛТ">ЭМЭЭЛТ</option> 
+                    <option value="ЭМЭЭЛТ">ЭМЭЭЛТ</option>
                 </select>
                 <span>ХООРОНДЫН ЗАМЫН</span>
                 <input type="number" id="distance1" placeholder="0">
@@ -1135,17 +1135,14 @@
             <div class="footer-section batlav">
                 <label style="color: #000; text-align: center; font-size: 1.4em; font-weight: 900;">Боловсруулсан:</label>
                 <select id="preparedBy" data-allow-view-edit="1">
-                    <option value="ПДБ М.СоёлЭрдэнэ">ПДБ М.СоёлЭрдэнэ</option>
-                    <option value="ПДБ Б.Энэбиш">ПДБ Б.Энэбиш</option>
-                    <option value="ПДБ С.Золбаяр">ПДБ С.Золбаяр</option>
-                    <option value="ПДБ П.Цэрэндорж">ПДБ П.Цэрэндорж</option>
-                    <option value="ПДБ Б.Бум-Асрал">ПДБ Б.Бум-Асрал</option>
-                    <option value="ПД-5 А.Шинэбаяр">ПД-5 А.Шинэбаяр</option>
+                    <option value="ПДБ Д.Пүрэвжав">ПДБ Д.Пүрэвжав</option>
+                    <option value="ПДБ Н.Амгаланбаатар">ПДБ Н.Амгаланбаатар</option>
+                    <option value="ПДБ Д.БатЭрдэнэ">ПДБ Д.БатЭрдэнэ</option>
                 </select>
                 <label>Хянасан:</label>
                 <select id="reviewedBy" data-allow-view-edit="1">
-                    <option value="ПД Б.Баярсайхан">ПД Б.Баярсайхан</option>
-                    <option value="ПДБ М.СоёлЭрдэнэ">ПДБ М.СоёлЭрдэнэ</option>
+                    <option value="ПД М.Баянбаатар">ПД М.Баянбаатар</option>
+                    <option value="ПДБ Д.Пүрэвжав">ПДБ Д.Пүрэвжав</option>
                 </select>
                 <button type="button" class="save-btn" id="saveDataBtn" data-allow-view-edit="1">💾 Хадгалах</button>
             </div>
@@ -1187,12 +1184,11 @@
             const STORAGE_KEY = "ubtz_daily_instruction_records_v1";
             const NAME_DIRECTORY_KEY = "ubtz_employee_names_v1";
             const WORKER_DRAFT_KEY = "ubtz_worker_draft_v1";
-            const WORKERS_CUSTOM_KEY = "workersCustom_v1";
             const RECORDS_DB_NAME = "ubtz_instruction_records_db";
             const RECORDS_STORE_NAME = "app_storage";
             const RECORDS_PRIMARY_KEY = "saved_records";
             const DEFAULT_EMPLOYEE_NAMES = [
-                "пр-6 Б.Энэбиш",
+                 "пр-6 Б.Энэбиш",
                 "пр-4 Н.Баттулга",
                 "пр-4 Б.Батхишиг",
                 "пр-4 А.Шинэбаяр",
@@ -1224,7 +1220,7 @@
                 "Г/Ж Ж.Аръяажав",
                 "Г/Ж А.Цэцэгжаргал",
                 "Г/Ж С.ГанЭрдэнэ",
-                "Г/Ж Ш.Ууганзаяа",                
+                "Г/Ж Ш.Ууганзаяа",                            
             ];
             let savedRecords = [];
             let employeeNames = [];
@@ -1244,55 +1240,6 @@
                 localStorage.setItem(NAME_DIRECTORY_KEY, JSON.stringify(employeeNames));
             } catch (error) {
                 console.error("Employee names save error:", error);
-            }
-        }
-
-        function registerWorkersInEmployeeTable(names) {
-            let workers = [];
-
-            try {
-                const storedWorkers = JSON.parse(localStorage.getItem(WORKERS_CUSTOM_KEY) || "[]");
-                workers = Array.isArray(storedWorkers) ? storedWorkers : [];
-            } catch (error) {
-                workers = [];
-            }
-
-            const nextNumber = workers.reduce((max, worker) => {
-                const match = String(worker?.id || "").match(/^EMP(\d+)$/i);
-                return match ? Math.max(max, Number(match[1])) : max;
-            }, 0);
-            let employeeNumber = nextNumber;
-
-            names.forEach((fullName) => {
-                const normalizedFullName = normalizeName(fullName);
-                const nameParts = normalizedFullName.split(/\s+/);
-                const position = nameParts.shift() || "Ажилтан";
-                const name = nameParts.join(" ") || normalizedFullName;
-                const existing = workers.find((worker) => {
-                    const workerName = normalizeName(worker?.name).toLowerCase();
-                    return workerName === name.toLowerCase() || workerName === normalizedFullName.toLowerCase();
-                });
-
-                if (existing) {
-                    existing.name = name;
-                    existing.position = existing.position || position;
-                    return;
-                }
-
-                employeeNumber += 1;
-                workers.push({
-                    id: `EMP${String(employeeNumber).padStart(4, "0")}`,
-                    name,
-                    section: "",
-                    position,
-                    phone: ""
-                });
-            });
-
-            try {
-                localStorage.setItem(WORKERS_CUSTOM_KEY, JSON.stringify(workers));
-            } catch (error) {
-                console.error("Employee table save error:", error);
             }
         }
 
@@ -1936,8 +1883,6 @@
 
             if (selectedWorkerNames.length > 0 && job) {
                 const addedNames = [];
-
-                registerWorkersInEmployeeTable(selectedWorkerNames);
 
                 selectedWorkerNames.forEach((name) => {
                     appendWorkerListItem(name, job, rank);

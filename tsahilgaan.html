@@ -1281,20 +1281,13 @@
 // =====================
 // DATA
 // =====================
-const REGISTERED_WORKERS_CACHE_KEY = 'workersCustom_v1';
+const REGISTERED_WORKERS_CACHE_KEYS = ['registeredWorkers_v1', 'workersCustom_v1', 'workersCache_v1'];
 
 function normalizeWorkerFromRegistered(raw) {
     if (!raw) return null;
     const id = String(raw.id || '').trim();
-    const rawName = String(raw.name || '').trim();
-    const storedRole = String(raw.role || raw.position || '').trim();
-    const nameParts = rawName.split(/\s+/);
-    if (storedRole && nameParts.length > 1 && /^(пр-\d+|г\/ж|жолооч)$/i.test(nameParts[0])) {
-        nameParts.shift();
-    }
-    const inferredRole = storedRole || (nameParts.length > 1 ? nameParts.shift() : '');
-    const name = nameParts.join(' ').trim() || rawName;
-    const role = inferredRole || 'Тодорхойгүй';
+    const name = String(raw.name || '').trim();
+    const role = String(raw.role || raw.position || '').trim() || 'Тодорхойгүй';
     if (!id || !name) return null;
     return { id, name, role };
 }
@@ -1303,16 +1296,18 @@ function loadWorkersFromRegisteredCache() {
     try {
         const dedup = new Map();
 
-        const raw = localStorage.getItem(REGISTERED_WORKERS_CACHE_KEY);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) return [];
+        REGISTERED_WORKERS_CACHE_KEYS.forEach((key) => {
+            const raw = localStorage.getItem(key);
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed)) return;
 
-        parsed.forEach((item) => {
-            const worker = normalizeWorkerFromRegistered(item);
-            if (worker && !dedup.has(worker.id)) {
-                dedup.set(worker.id, worker);
-            }
+            parsed.forEach((item) => {
+                const worker = normalizeWorkerFromRegistered(item);
+                if (worker && !dedup.has(worker.id)) {
+                    dedup.set(worker.id, worker);
+                }
+            });
         });
 
         return Array.from(dedup.values());
@@ -1321,21 +1316,40 @@ function loadWorkersFromRegisteredCache() {
     }
 }
 
-function refreshWorkersFromRegisteredCache() {
-    const registered = loadWorkersFromRegisteredCache();
-    WORKERS = registered;
-    syncDataWithWorkers();
-    refreshManualSelect();
-    renderWorkerAdmin();
-    renderTable();
-    updateStats();
-    renderDailyReport();
-    renderAllNewsCardStats();
-    scheduleAutosave();
-}
-
 const registeredWorkers = loadWorkersFromRegisteredCache();
-let WORKERS = registeredWorkers;
+
+let WORKERS = registeredWorkers.length ? registeredWorkers : [
+    { id: 'EMP001', name: 'Б.Баасанжаргал', role: 'ПЧИу' },
+    { id: 'EMP002', name: 'Б.Батболд',       role: 'ПД' },
+    { id: 'EMP003', name: 'О.Нэргүй',        role: 'ПДБк' },
+    { id: 'EMP004', name: 'Л.Жаргал',        role: 'ПДБр' },
+    { id: 'EMP005', name: 'Г.Нямсүрэн',      role: 'ПДБс' },
+    { id: 'EMP006', name: 'Д.Мөнхбаяр',      role: 'пр-4' },
+    { id: 'EMP007', name: 'Т.Оюунтунгалаг',  role: 'пр-3' },
+    { id: 'EMP008', name: 'Э.Сайнзаяа',      role: 'пр-2' },
+    { id: 'EMP009', name: 'Н.Болдбаатар',    role: 'Дагалдан' },
+    { id: 'EMP010', name: 'Х.Уранцэцэг',     role: 'тор засагч' },
+    { id: 'EMP011', name: 'С.Мөнхжаргал',    role: 'жолооч' },
+    { id: 'EMP012', name: 'А.Ганбаатар',     role: 'ус олгогч' },
+    { id: 'EMP013', name: 'Б.Энхтүвшин',     role: 'гармын жижүүр' },
+    { id: 'EMP014', name: 'Д.Батчимэг',      role: 'ПЧИу' },
+    { id: 'EMP015', name: 'Л.Мандах',        role: 'ПД' },
+    { id: 'EMP016', name: 'Н.Эрдэнэчимэг',  role: 'ПДБк' },
+    { id: 'EMP017', name: 'Г.Батсүх',        role: 'ПДБр' },
+    { id: 'EMP018', name: 'Ж.Наранцэцэг',   role: 'пр-4' },
+    { id: 'EMP019', name: 'О.Гантулга',      role: 'пр-3' },
+    { id: 'EMP020', name: 'Х.Баярмаа',       role: 'пр-2' },
+    { id: 'EMP021', name: 'Б.Энхбаяр',       role: 'Дагалдан' },
+    { id: 'EMP022', name: 'С.Чимэдцэрэн',   role: 'тор засагч' },
+    { id: 'EMP023', name: 'Т.Болортуяа',     role: 'жолооч' },
+    { id: 'EMP024', name: 'М.Ганзориг',      role: 'ус олгогч' },
+    { id: 'EMP025', name: 'Д.Туяасүрэн',     role: 'гармын жижүүр' },
+    { id: 'EMP026', name: 'Н.Мөнхбат',       role: 'ПЧИу' },
+    { id: 'EMP027', name: 'Б.Оюунбилэг',    role: 'ПД' },
+    { id: 'EMP028', name: 'Э.Алтантуяа',    role: 'ПДБс' },
+    { id: 'EMP029', name: 'Г.Батжаргал',     role: 'пр-4' },
+    { id: 'EMP030', name: 'Д.Цэрэнпунцаг',  role: 'пр-3' },
+];
 
 const STATUS_MAP = {
     present: { label: 'Ирсэн',            cls: 's-present' },
@@ -1621,6 +1635,12 @@ function loadAutosaveState() {
         const parsed = JSON.parse(raw);
         if (!parsed || !Array.isArray(parsed.newsCards)) return false;
 
+        if (Array.isArray(parsed.workers) && parsed.workers.length) {
+            WORKERS = parsed.workers
+                .filter(w => w && w.id && w.name && w.role)
+                .map(w => ({ id: String(w.id), name: String(w.name), role: String(w.role) }));
+        }
+
         Object.keys(newsRegistrations).forEach(k => delete newsRegistrations[k]);
 
         parsed.newsCards.forEach(item => {
@@ -1765,78 +1785,33 @@ function collectQrCandidates(rawText) {
     return [...new Set(candidates.map(v => normalizeQrValue(v).toLowerCase()).filter(Boolean))];
 }
 
-function readQrIdentity(rawText) {
-    const text = normalizeQrValue(rawText);
-    let data = null;
-
-    try {
-        data = JSON.parse(text);
-    } catch (error) {
-        try {
-            const url = new URL(text);
-            data = {
-                id: url.searchParams.get('id') || url.searchParams.get('empId') || url.searchParams.get('employeeId'),
-                name: url.searchParams.get('name') || url.searchParams.get('employeeName') || url.searchParams.get('fullName'),
-                role: url.searchParams.get('role') || url.searchParams.get('position') || url.searchParams.get('job'),
-            };
-        } catch (urlError) {
-            return null;
-        }
-    }
-
-    if (data && typeof data.employee === 'object') {
-        data = data.employee;
-    }
-    if (!data || typeof data !== 'object') return null;
-
-    const id = normalizeQrValue(data.id || data.empId || data.employeeId);
-    const name = normalizeQrValue(data.name || data.employeeName || data.fullName);
-    const role = normalizeQrValue(data.role || data.position || data.job || data.albanTushaal);
-    if (!id && !name && !role) return null;
-
-    return { id, name, role };
-}
-
-function qrIdentityMatchesWorker(worker, identity) {
-    if (!identity) return true;
-    const hasName = Boolean(identity.name);
-    const hasRole = Boolean(identity.role);
-
-    if (hasName !== hasRole) return false;
-    if (!hasName) return true;
-
-    return normalizeQrValue(worker.name).toLowerCase() === identity.name.toLowerCase()
-        && normalizeQrValue(worker.role).toLowerCase() === identity.role.toLowerCase();
-}
-
 function findWorkerFromQr(rawText) {
     const candidates = collectQrCandidates(rawText);
     if (!candidates.length) return null;
-    const identity = readQrIdentity(rawText);
 
     const tableWorkers = getWorkersFromTableBody();
     const sourceWorkers = tableWorkers.length
         ? [...tableWorkers, ...WORKERS.filter(w => !tableWorkers.some(tw => tw.id === w.id))]
         : WORKERS;
 
-    const byId = sourceWorkers.find(w => candidates.includes(normalizeQrValue(w.id).toLowerCase())
-        && qrIdentityMatchesWorker(w, identity));
+    const byId = sourceWorkers.find(w => candidates.includes(normalizeQrValue(w.id).toLowerCase()));
     if (byId) return byId;
 
     const candidateEmpNumbers = candidates
         .map((candidate) => parseEmpNumeric(candidate))
         .filter((num) => Number.isFinite(num));
     if (candidateEmpNumbers.length) {
-        const byEmpNumber = sourceWorkers.find((w) => candidateEmpNumbers.includes(parseEmpNumeric(w.id))
-            && qrIdentityMatchesWorker(w, identity));
+        const byEmpNumber = sourceWorkers.find((w) => candidateEmpNumbers.includes(parseEmpNumeric(w.id)));
         if (byEmpNumber) return byEmpNumber;
     }
 
-    if (identity?.name && identity?.role) {
-        return sourceWorkers.find((worker) => qrIdentityMatchesWorker(worker, identity)) || null;
-    }
+    const byName = sourceWorkers.find(w => candidates.includes(normalizeQrValue(w.name).toLowerCase()));
+    if (byName) return byName;
 
-    return null;
+    return sourceWorkers.find((w) => {
+        const name = normalizeQrValue(w.name).toLowerCase();
+        return candidates.some((candidate) => candidate.includes(name) || name.includes(candidate));
+    }) || null;
 }
 
 const qrDeviceInput = document.getElementById('qr-device-input');
@@ -2462,11 +2437,6 @@ if (!restored) {
     renderAllNewsCardStats();
 }
 renderAggregateSummary();
-
-window.addEventListener('storage', function (event) {
-    if (event.key !== 'workersCustom_v1' && event.key !== 'registeredWorkers_v1') return;
-    refreshWorkersFromRegisteredCache();
-});
 </script>
 </body>
 </html>

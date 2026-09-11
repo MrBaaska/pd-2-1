@@ -31,7 +31,7 @@
       --shell-gap: clamp(12px, 2vw, 24px);
       --shell-pad: clamp(12px, 2vw, 28px);
       --sidebar-width: 320px;
-      --frame-min-height: clamp(520px, calc(100dvh - 168px), 980px);
+      --frame-min-height: calc(100dvh - var(--topbar-height) - (var(--shell-gap) * 2));
     }
 
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -247,6 +247,48 @@
       font-size: var(--topbar-font-size);
       color: var(--text-muted);
     }
+    .mode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.04);
+      color: var(--text-muted);
+    }
+    .mode-badge.edit {
+      color: var(--accent);
+      background: rgba(0,212,255,0.08);
+      border-color: rgba(0,212,255,0.22);
+    }
+    .mode-toggle {
+      appearance: none;
+      border: 1px solid var(--border-glow);
+      background: linear-gradient(180deg, rgba(0,212,255,0.14), rgba(0,212,255,0.08));
+      color: var(--text-primary);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 9px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    }
+    .mode-toggle:hover {
+      transform: translateY(-1px);
+      background: linear-gradient(180deg, rgba(0,212,255,0.22), rgba(0,212,255,0.12));
+      border-color: var(--accent);
+    }
+    .mode-toggle:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
     .status-dot {
       width: 7px; height: 7px;
       border-radius: 50%;
@@ -263,52 +305,6 @@
       font-size: var(--topbar-font-size);
       color: var(--accent);
       letter-spacing: 0.08em;
-    }
-    .mode-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border-glow);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 12px;
-      letter-spacing: 0.04em;
-      white-space: nowrap;
-      background: rgba(0, 212, 255, 0.08);
-      color: var(--accent);
-    }
-    .mode-badge.edit {
-      background: rgba(9, 243, 114, 0.12);
-      border-color: rgba(9, 243, 114, 0.45);
-      color: var(--accent2);
-    }
-    .mode-toggle-btn {
-      border: 1px solid var(--border-glow);
-      background: rgba(0, 212, 255, 0.08);
-      color: var(--text-primary);
-      font-family: 'Exo 2', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      border-radius: 8px;
-      padding: 7px 12px;
-      cursor: pointer;
-      transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
-      white-space: nowrap;
-    }
-    .mode-toggle-btn:hover {
-      background: rgba(0, 212, 255, 0.18);
-      border-color: var(--accent);
-      transform: translateY(-1px);
-    }
-    .mode-toggle-btn.edit {
-      background: rgba(255, 61, 61, 0.12);
-      border-color: rgba(255, 61, 61, 0.35);
-      color: #ffdede;
-    }
-    .mode-toggle-btn.edit:hover {
-      background: rgba(255, 61, 61, 0.2);
-      border-color: rgba(255, 61, 61, 0.55);
     }
 
     /* ═══════════════════════ LAYOUT ═══════════════════════ */
@@ -441,6 +437,11 @@
       background-image: var(--rail-stripe);
       overflow: auto;
       padding: var(--shell-gap);
+      min-height: calc(100dvh - var(--topbar-height));
+      display: flex;
+    }
+    .main.fullscreen-main {
+      padding: 0;
     }
 
     /* Welcome / Dashboard panel */
@@ -450,7 +451,8 @@
       margin: 0;
       padding: 0;
       min-width: 0;
-      height: 100%;
+      display: flex;
+      flex: 1;
     }
     .dash-hero {
       position: relative;
@@ -570,11 +572,21 @@
       border: 1px solid var(--border);
       border-radius: 18px;
       overflow: hidden;
-      height: calc(100dvh - var(--topbar-height) - (var(--shell-gap) * 2));
-      min-height: 0;
+      height: var(--frame-min-height);
+      min-height: calc(100dvh - var(--topbar-height) - (var(--shell-gap) * 2));
+      max-height: calc(100dvh - var(--topbar-height) - (var(--shell-gap) * 2));
+      width: 100%;
       display: flex;
       flex-direction: column;
       box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+    }
+    .main.fullscreen-main .content-frame-wrap {
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      height: calc(100dvh - var(--topbar-height));
+      min-height: calc(100dvh - var(--topbar-height));
+      max-height: calc(100dvh - var(--topbar-height));
     }
     .frame-titlebar {
       display: flex;
@@ -587,6 +599,9 @@
       color: var(--text-muted);
       min-height: 54px;
     }
+    .main.fullscreen-main .frame-titlebar {
+      display: none;
+    }
     .frame-dot {
       width: 9px; height: 9px;
       border-radius: 50%;
@@ -594,11 +609,13 @@
     #content-frame {
       width: 100%;
       flex: 1;
-      height: 100%;
       min-height: 0;
       border: none;
       display: block;
       background: transparent;
+    }
+    .main.fullscreen-main #content-frame {
+      min-height: calc(100dvh - var(--topbar-height));
     }
 
     .sidebar-overlay {
@@ -717,14 +734,14 @@
       .content-frame-wrap {
         width: 100%;
         max-width: none;
-        height: calc(100dvh - var(--topbar-height) - 24px);
-        min-height: 0;
-        display: flex;
-        overflow: hidden;
+        height: auto;
+        min-height: calc(100dvh - 104px);
+        display: block;
+        overflow: visible;
       }
       #content-frame {
-        flex: 1;
-        min-height: 0;
+        flex: none;
+        min-height: calc(100dvh - 160px);
       }
     }
 
@@ -745,14 +762,6 @@
       }
       .topbar-status .status-badge span {
         display: none;
-      }
-      .mode-badge {
-        font-size: 11px;
-        padding: 4px 8px;
-      }
-      .mode-toggle-btn {
-        font-size: 12px;
-        padding: 6px 10px;
       }
       .dashboard {
         width: 100%;
@@ -780,8 +789,7 @@
         font-size: 24px;
       }
       .content-frame-wrap {
-        height: calc(100dvh - var(--topbar-height) - 20px);
-        min-height: 0;
+        min-height: calc(100dvh - 92px);
         border-radius: 14px;
       }
       .frame-titlebar {
@@ -825,12 +833,11 @@
         font-size: 20px;
       }
       .content-frame-wrap {
-        height: calc(100dvh - var(--topbar-height) - 16px);
-        min-height: 0;
+        min-height: calc(100dvh - 86px);
         border-radius: 12px;
       }
       #content-frame {
-        min-height: 0;
+        min-height: calc(100dvh - 142px);
       }
       .copyright-badge {
         right: 10px;
@@ -861,6 +868,8 @@
     <ul class="nav-links" id="topNav">
       <li><a href="#" data-page-key="Тушаал, стандарт"><i class="fa fa-file-lines" style="margin-right:4px"></i>Тушаал, стандарт</a></li>
       <li><a href="#" data-page-key="Цахилгаан"><i class="fa fa-bolt" style="margin-right:4px"></i>Цахилгаан</a></li>
+      <li><a href="#" data-page-key="Шийдвэр"><i class="fa fa-gavel" style="margin-right:4px"></i>Шийдвэр</a></li>
+
       <li>
         <span onclick="toggleNav(this)">
           <i class="fa fa-calendar-check"></i> Төлөвлөгөө
@@ -911,8 +920,8 @@
     </ul>
 
     <div class="topbar-status">
-      <div class="mode-badge" id="mode-badge">Харах горим</div>
-      <button class="mode-toggle-btn" id="mode-toggle-btn" type="button">Кодоор нэвтрэх</button>
+      <div class="mode-badge view" id="mode-badge">Харах горим</div>
+      <button class="mode-toggle" id="mode-toggle" type="button" aria-pressed="false">Кодоор нэвтрэх</button>
       <div class="clock" id="clock">--:--:--</div>
     </div>
 
@@ -927,16 +936,17 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-header">⬡ Үйл ажиллагаа</div>
+
     <nav class="sidebar-nav">
 
-        <div class="sidebar-item">
-          <a href="#" class="sidebar-link" id="irts-link" data-page-key="Ирц бүртгэл"><i class="fa fa-calendar-check"></i> Ирц бүртгэл</a>
-        </div>
+      <div class="sidebar-item">
+        <a href="irts.html" class="sidebar-link" id="irts-link" data-page-key="Ирц бүртгэл"><i class="fa fa-calendar-check"></i> Ирц бүртгэл</a>
+      </div>
 
       <div class="sidebar-item has-sub" onclick="toggleSub(this)">
-        <div class="sidebar-link" id="zoovorchilgoo-link"><i class="fa fa-book-open"></i> Аюулгүй ажиллагааны зааварчилгаа</div>
+        <div class="sidebar-link"><i class="fa fa-book-open"></i> Аюулгүй ажиллагааны зааварчилгаа</div>
         <div class="sidebar-sub">
-          <a href="#" data-page-key="Өдөр тутмын зааварчилгаа">Зам засвар</a>
+          <a href="#" id="zoovorchilgoo-link" data-page-key="Зааварчилгаа / Зам засвар">Зам засвар</a>
           <a href="#" data-page-key="Зааварчилгаа / Тор засагч">Тор засагч</a>
           <a href="#" data-page-key="Зааварчилгаа / Үерийн эргүүл">Үерийн эргүүл</a>
           <a href="#" data-page-key="Зааварчилгаа / Ажил удирдагч">Ажил удирдагч</a>
@@ -951,18 +961,18 @@
       </div>
 
       <div class="sidebar-item">
-        <a href="#" class="sidebar-link" id="burtgel-link" data-page-key="Бүртгэл"><i class="fa fa-folder-open"></i> Зааварчилгаа авсан ажилтаны бүртгэл</a>
+        <a href="#" class="sidebar-link" id="burtgel-link" data-page-key="Бүртгэл"><i class="fa fa-folder-open"></i>Зааварчилгаа авсан ажилтаны бүртгэл</a>
       </div>
 
       <div class="sidebar-divider"></div>
 
-  <div class="sidebar-item">
+<div class="sidebar-item">
         <a href="#" class="sidebar-link danger-link" id="toggle-alert" data-page-key="Ажлын бүртгэл">
           <i class="fa fa-sitemap"></i> Ажлын бүртгэл
         </a>
       </div>
 
-        <div class="sidebar-item">
+      <div class="sidebar-item">
         <a href="#" class="sidebar-link danger-link" id="toggle-alert" data-page-key="Хурлын тэмдэглэл">
           <i class="fa fa-sitemap"></i> Хурлын тэмдэглэл
         </a>
@@ -981,12 +991,12 @@
         <div class="sidebar-sub">
           <a href="#" id="ajiltan-link" data-page-key="Ажилтануудын мэдээлэл">Ажилтануудын мэдээлэл</a>
           <a href="#" id="sum-link" data-page-key="Суман шилжүүлгийн бүртгэл">Суман шилжүүлгийн бүртгэл</a>
-          <a href="#" data-page-key="Малтай айлын судалгаа">Малтай айлын судалгаа</a>
-          <a href="#" data-page-key="Гүүр, хоолойн судалгаа">Гүүр, хоолойн судалгаа</a>
-          <a href="#" data-page-key="ПУ-5 дэр модны судалгаа">ПУ-5 дэр модны судалгаа</a>
-          <a href="#" data-page-key="ПУ-2 зам төмрийн судалгаа">ПУ-2 зам төмрийн судалгаа</a>
-          <a href="#" data-page-key="Нөөц зам төмрийн судалгаа">Нөөц зам төмрийн судалгаа</a>
-          <a href="#" data-page-key="Уулзварын зайн судалгаа">Уулзварын зайн судалгаа</a>
+          <a href="#" id="maltai-ail-link" data-page-key="Малтай айлын судалгаа">Малтай айлын судалгаа</a>
+          <a href="#" id="guur-hooloi-link" data-page-key="Гүүр, хоолойн судалгаа">Гүүр, хоолойн судалгаа</a>
+          <a href="#" id="pu5-dermod-link" data-page-key="ПУ-5 дэр модны судалгаа">ПУ-5 дэр модны судалгаа</a>
+          <a href="#" id="pu2-zamtomor-link" data-page-key="ПУ-2 зам төмрийн судалгаа">ПУ-2 зам төмрийн судалгаа</a>
+          <a href="#" id="noots-zamtomor-link" data-page-key="Нөөц зам төмрийн судалгаа">Нөөц зам төмрийн судалгаа</a>
+          <a href="#" id="uulzvar-zai-link" data-page-key="Уулзварын зайн судалгаа">Уулзварын зайн судалгаа</a>
         </div>
       </div>
 
@@ -995,9 +1005,12 @@
       </div>
 
       <div class="sidebar-divider"></div>
-
-      <div class="sidebar-item">
-          <a href="#" class="sidebar-link" id="passport-link" data-page-key="Паспортын үзлэг"><i class="fa fa-calculator"></i> Паспортын үзлэг</a>
+      <div class="sidebar-item has-sub" onclick="toggleSub(this)">
+        <div class="sidebar-link"><i class="fa fa-calculator"></i> Паспортын үзлэг</div>
+        <div class="sidebar-sub">
+          <a href="passport.html" id="passport-link" data-page-key="Паспортын үзлэг">Паспортын үзлэг</a>
+          <a href="dvnz.html" id="dvnz-link" data-page-key="Дүнгийн үзлэг">Дүнгийн үзлэг</a>
+        </div>
       </div>
       <div class="sidebar-item">
         <a href="#" class="sidebar-link" data-page-key="ХАБЭА / Эрсдэлийн үнэлгээ"><i class="fa fa-chart-bar"></i> Эрсдэлийн үнэлгээ</a>
@@ -1044,8 +1057,11 @@
     editMode: 'ubtz:index:edit-mode'
   };
   const FRAME_STORAGE_PREFIX = 'ubtz:autosave:';
-  const EDIT_ACCESS_CODE = '91@6#4820';
-  let isEditMode = false;
+  const EDIT_UNLOCK_CODE = '91@6#4820';
+  const FULLSCREEN_PAGE_KEYS = new Set([
+    'Ажлын бүртгэл',
+    'Хурлын тэмдэглэл'
+  ]);
 
   function readLastPage() {
     try {
@@ -1065,183 +1081,148 @@
 
   function readEditMode() {
     try {
-      return sessionStorage.getItem(UI_STORAGE_KEYS.editMode) === '1';
+      return sessionStorage.getItem(UI_STORAGE_KEYS.editMode) === 'edit' ? 'edit' : 'view';
     } catch (error) {
-      return false;
+      return 'view';
     }
   }
 
-  function writeEditMode(enabled) {
+  function writeEditMode(mode) {
     try {
-      sessionStorage.setItem(UI_STORAGE_KEYS.editMode, enabled ? '1' : '0');
+      sessionStorage.setItem(UI_STORAGE_KEYS.editMode, mode === 'edit' ? 'edit' : 'view');
     } catch (error) {
       console.warn('Edit mode state write failed:', error);
     }
   }
 
-  function updateEditModeUi() {
+  function isEditModeEnabled() {
+    return readEditMode() === 'edit';
+  }
+
+  function syncEditModeUi() {
+    const enabled = isEditModeEnabled();
     const badge = document.getElementById('mode-badge');
-    const button = document.getElementById('mode-toggle-btn');
+    const button = document.getElementById('mode-toggle');
     if (badge) {
-      badge.textContent = isEditMode ? 'Засварлах горим' : 'Харах горим';
-      badge.classList.toggle('edit', isEditMode);
+      badge.textContent = enabled ? 'Засварлах горим' : 'Харах горим';
+      badge.classList.toggle('edit', enabled);
     }
     if (button) {
-      button.textContent = isEditMode ? 'Гарах' : 'Кодоор нэвтрэх';
-      button.classList.toggle('edit', isEditMode);
+      button.textContent = enabled ? 'Гарах' : 'Кодоор нэвтрэх';
+      button.setAttribute('aria-pressed', enabled ? 'true' : 'false');
     }
-  }
-
-  function setDataAttrIfMissing(element, attr, value) {
-    if (!element.hasAttribute(attr)) {
-      element.setAttribute(attr, value);
-    }
-  }
-
-  function getFrameFileName(frame) {
-    if (!frame) {
-      return '';
-    }
-    const src = frame.getAttribute('src') || frame.src || '';
-    try {
-      const url = new URL(src, window.location.href);
-      const parts = url.pathname.split('/').filter(Boolean);
-      return (parts.pop() || '').toLowerCase();
-    } catch (error) {
-      const normalized = String(src).split('#')[0].split('?')[0].replace(/\\/g, '/');
-      const chunks = normalized.split('/').filter(Boolean);
-      return (chunks.pop() || '').toLowerCase();
-    }
-  }
-
-  function isViewEditableFrame(frame) {
-    const fileName = getFrameFileName(frame);
-    return fileName === 'anhaar.html';
-  }
-
-  function canEditFrame(frame) {
-    return isEditMode || isViewEditableFrame(frame);
-  }
-
-  function applyFrameAccessControl(doc, editable) {
-    if (!doc || !doc.body) {
-      return;
-    }
-
-    const inputReadOnlyTypes = new Set([
-      'text', 'search', 'url', 'tel', 'email', 'password', 'number',
-      'date', 'datetime-local', 'month', 'time', 'week'
-    ]);
-
-    doc.querySelectorAll('input').forEach(function(input) {
-      setDataAttrIfMissing(input, 'data-copilot-orig-disabled', input.disabled ? '1' : '0');
-      setDataAttrIfMissing(input, 'data-copilot-orig-readonly', input.readOnly ? '1' : '0');
-
-      if (editable) {
-        input.disabled = input.getAttribute('data-copilot-orig-disabled') === '1';
-        input.readOnly = input.getAttribute('data-copilot-orig-readonly') === '1';
-        return;
-      }
-
-      const type = String(input.type || '').toLowerCase();
-      if (!type || inputReadOnlyTypes.has(type)) {
-        input.disabled = false;
-        input.readOnly = true;
-      } else {
-        input.readOnly = false;
-        input.disabled = true;
-      }
-    });
-
-    doc.querySelectorAll('textarea').forEach(function(textarea) {
-      setDataAttrIfMissing(textarea, 'data-copilot-orig-readonly', textarea.readOnly ? '1' : '0');
-      if (editable) {
-        textarea.readOnly = textarea.getAttribute('data-copilot-orig-readonly') === '1';
-      } else {
-        textarea.readOnly = true;
-      }
-    });
-
-    doc.querySelectorAll('select, button').forEach(function(element) {
-      setDataAttrIfMissing(element, 'data-copilot-orig-disabled', element.disabled ? '1' : '0');
-      const allowViewEdit = element.getAttribute('data-allow-view-edit') === '1';
-      if (editable) {
-        element.disabled = element.getAttribute('data-copilot-orig-disabled') === '1';
-      } else if (allowViewEdit) {
-        element.disabled = element.getAttribute('data-copilot-orig-disabled') === '1';
-      } else {
-        element.disabled = true;
-      }
-    });
-
-    doc.querySelectorAll('[contenteditable]').forEach(function(element) {
-      setDataAttrIfMissing(element, 'data-copilot-orig-contenteditable', element.getAttribute('contenteditable') || 'true');
-      if (editable) {
-        element.setAttribute('contenteditable', element.getAttribute('data-copilot-orig-contenteditable'));
-      } else {
-        element.setAttribute('contenteditable', 'false');
-      }
-    });
-  }
-
-  function bindFrameAccessControl(frame) {
-    if (frame._copilotAccessObserver) {
-      frame._copilotAccessObserver.disconnect();
-      frame._copilotAccessObserver = null;
-    }
-    try {
-      const doc = frame.contentDocument;
-      if (!doc || !doc.body) {
-        return;
-      }
-
-      const observer = new MutationObserver(function(mutations) {
-        if (!mutations.length) {
-          return;
-        }
-        applyFrameAccessControl(doc, canEditFrame(frame));
-      });
-      observer.observe(doc.body, { childList: true, subtree: true });
-      frame._copilotAccessObserver = observer;
-    } catch (error) {
-      console.warn('Frame access observer binding skipped:', error);
-    }
-  }
-
-  function applyEditModeToCurrentFrame() {
-    const frame = document.getElementById('content-frame');
-    if (!frame) {
-      return;
-    }
-    try {
-      const doc = frame.contentDocument;
-      if (!doc || !doc.body) {
-        return;
-      }
-      applyFrameAccessControl(doc, canEditFrame(frame));
-      bindFrameAccessControl(frame);
-    } catch (error) {
-      console.warn('Frame access control skipped:', error);
-    }
+    document.body.dataset.editMode = enabled ? 'edit' : 'view';
   }
 
   function setEditMode(enabled) {
-    isEditMode = Boolean(enabled);
-    writeEditMode(isEditMode);
-    updateEditModeUi();
-    applyEditModeToCurrentFrame();
+    writeEditMode(enabled ? 'edit' : 'view');
+    syncEditModeUi();
+    const frame = document.getElementById('content-frame');
+    if (frame) {
+      applyFrameEditMode(frame);
+    }
+  }
+
+  function captureEditState(element) {
+    if (element.dataset.copilotEditStateCaptured === 'true') {
+      return;
+    }
+    element.dataset.copilotEditStateCaptured = 'true';
+    element.dataset.copilotOrigDisabled = element.disabled ? 'true' : 'false';
+    if ('readOnly' in element) {
+      element.dataset.copilotOrigReadonly = element.readOnly ? 'true' : 'false';
+    }
+    element.dataset.copilotOrigHasContenteditable = element.hasAttribute('contenteditable') ? 'true' : 'false';
+    if (element.hasAttribute('contenteditable')) {
+      element.dataset.copilotOrigContenteditable = element.getAttribute('contenteditable') || '';
+    }
+  }
+
+  function restoreEditState(element) {
+    if (element.dataset.copilotOrigDisabled !== undefined) {
+      element.disabled = element.dataset.copilotOrigDisabled === 'true';
+    }
+    if ('readOnly' in element && element.dataset.copilotOrigReadonly !== undefined) {
+      element.readOnly = element.dataset.copilotOrigReadonly === 'true';
+    }
+    if (element.dataset.copilotOrigHasContenteditable === 'true') {
+      const originalValue = element.dataset.copilotOrigContenteditable || '';
+      if (originalValue === '') {
+        element.removeAttribute('contenteditable');
+      } else {
+        element.setAttribute('contenteditable', originalValue);
+      }
+    } else if (element.matches('[contenteditable]')) {
+      element.removeAttribute('contenteditable');
+    }
+    element.removeAttribute('aria-readonly');
+  }
+
+  function setElementEditableState(element, enabled) {
+    if (!(element instanceof element.ownerDocument.defaultView.HTMLElement)) {
+      return;
+    }
+
+    // Keep selected footer controls interactive on the daily briefing page.
+    if (element.id === 'preparedBy' || element.id === 'reviewedBy' || element.id === 'saveDataBtn') {
+      captureEditState(element);
+      restoreEditState(element);
+      return;
+    }
+
+    // Keep the management checklist table fully interactive.
+    if (element.closest && element.closest('#recordTable')) {
+      captureEditState(element);
+      restoreEditState(element);
+      return;
+    }
+
+    captureEditState(element);
+
+    if (enabled) {
+      restoreEditState(element);
+      return;
+    }
+
+    if (element.matches('button, input[type="button"], input[type="submit"], input[type="reset"], input[type="file"], select')) {
+      element.disabled = true;
+      return;
+    }
+
+    if (element.matches('textarea')) {
+      element.readOnly = true;
+      element.setAttribute('aria-readonly', 'true');
+      return;
+    }
+
+    if (element.matches('input')) {
+      const inputType = (element.getAttribute('type') || 'text').toLowerCase();
+      if (inputType === 'checkbox' || inputType === 'radio' || inputType === 'range' || inputType === 'color') {
+        element.disabled = true;
+      } else {
+        element.readOnly = true;
+        element.setAttribute('aria-readonly', 'true');
+      }
+      return;
+    }
+
+    if (element.isContentEditable) {
+      element.setAttribute('contenteditable', 'false');
+      element.setAttribute('aria-readonly', 'true');
+    }
   }
 
   const staticPageFallbacks = {
+    'Ирц бүртгэл': 'irts.html',
     'Өдөр тутмын зааварчилгаа': 'zoovorchilgoo.html',
-    'Тушаал, стандарт': 'tushaal.html',
+    'Зааварчилгаа / Зам засвар': 'zoovorchilgoo.html',
     'Цахилгаан': 'tsahilgaan.html',
     'Төлөвлөгөө / Сарын ажлын төлөвлөгөө': 'sariin.html',
     'Шийдвэр': 'shiidwer.html',
-    'Үүрэг даалгавар': 'ita.html',
-    'Менежментийн нэгдсэн тогтолцоо': 'anhaar.html',
     'Ажлын бүртгэл': 'ajliinBvrtgel.html',
     'Хурлын тэмдэглэл': 'hural.html',
+    'Үүрэг даалгавар': 'ita.html',
+    'Менежментийн нэгдсэн тогтолцоо': 'anhaar.html',
     'Ажилтануудын мэдээлэл': 'ajiltan.html',
     'Суман шилжүүлгийн бүртгэл': 'sum.html',
     'Малтай айлын судалгаа': 'torZasagch.html',
@@ -1254,8 +1235,8 @@
     'Паспортын үзлэг': 'passport.html',
     'Замын техникийн байдал': 'tech.html',
     'Хэсгийн танилцуулга': 'heseg.html',
-    'Бүртгэл': 'bvrtgel.html'
-     ,'Ирц бүртгэл': 'irts.html'
+    'Бүртгэл': 'bvrtgel.html',
+    'ХАБЭА / Эрсдэлийн үнэлгээ': 'ersdeliinVnelgee.html'
   };
 
   function findPageElement(pageKey) {
@@ -1444,6 +1425,61 @@
     observer.observe(doc.body, { childList: true, subtree: true });
   }
 
+  function setupFrameEditMode(doc) {
+    if (doc.documentElement.dataset.editModeReady === 'true') {
+      return;
+    }
+    doc.documentElement.dataset.editModeReady = 'true';
+
+    function refreshElement(node) {
+      if (!(node instanceof node.ownerDocument.defaultView.HTMLElement)) {
+        return;
+      }
+      if (node.matches('input, textarea, select, button, [contenteditable]')) {
+        setElementEditableState(node, isEditModeEnabled());
+      }
+      node.querySelectorAll('input, textarea, select, button, [contenteditable]').forEach(function(element) {
+        setElementEditableState(element, isEditModeEnabled());
+      });
+    }
+
+    refreshElement(doc.body);
+
+    const observer = new MutationObserver(function(mutations) {
+      const enabled = isEditModeEnabled();
+      mutations.forEach(function(mutation) {
+        mutation.addedNodes.forEach(function(node) {
+          if (node.nodeType === 1) {
+            if (node.matches('input, textarea, select, button, [contenteditable]')) {
+              setElementEditableState(node, enabled);
+            }
+            node.querySelectorAll('input, textarea, select, button, [contenteditable]').forEach(function(element) {
+              setElementEditableState(element, enabled);
+            });
+          }
+        });
+      });
+    });
+    observer.observe(doc.body, { childList: true, subtree: true });
+  }
+
+  function applyFrameEditMode(frame) {
+    try {
+      const doc = frame.contentDocument;
+      if (!doc || !doc.body) {
+        return;
+      }
+      const enabled = isEditModeEnabled();
+      doc.documentElement.dataset.editMode = enabled ? 'edit' : 'view';
+      doc.body.dataset.editMode = enabled ? 'edit' : 'view';
+      doc.querySelectorAll('input, textarea, select, button, [contenteditable]').forEach(function(element) {
+        setElementEditableState(element, enabled);
+      });
+    } catch (error) {
+      console.warn('Frame edit mode sync skipped:', error);
+    }
+  }
+
   function injectFrameStyles(doc) {
     if (doc.getElementById('copilot-frame-responsive-style')) {
       return;
@@ -1456,13 +1492,21 @@
       'img, svg { max-width: 100%; height: auto; }',
       'iframe { max-width: 100%; }',
       'input, textarea, select { max-width: 100%; }',
-      '.container, .wrapper, .dashboard, .main-content { width: 100% !important; max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; }',
+      '.container, .wrapper, .dashboard, .main-content, .wrap, .inner, .max-w-7xl { width: 100% !important; max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; }',
       '.table-container, .table-wrapper, [class*="table-container"], [class*="table-wrapper"] { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }',
       '@media (max-width: 768px) {',
       '  body { min-width: 0 !important; }',
       '}'
     ].join(' ');
     doc.head.appendChild(style);
+  }
+
+  function syncFramePresentation(pageKey) {
+    const main = document.querySelector('.main');
+    if (!main) {
+      return;
+    }
+    main.classList.toggle('fullscreen-main', FULLSCREEN_PAGE_KEYS.has(pageKey));
   }
 
   function getFrameContentHeight(doc) {
@@ -1574,14 +1618,14 @@
       ensureFrameViewport(doc);
       injectFrameStyles(doc);
       bindFrameAutoHeight(frame);
+      setupFrameEditMode(doc);
+      applyFrameEditMode(frame);
       syncFrameSize(frame);
       const autosaveMeta = doc.querySelector('meta[name="copilot-frame-autosave"]');
       const autosaveDisabled = autosaveMeta && String(autosaveMeta.getAttribute('content') || '').toLowerCase() === 'off';
       if (!autosaveDisabled) {
         setupFrameAutosave(doc, getAutosaveStorageKey(frame));
       }
-      applyFrameAccessControl(doc, canEditFrame(frame));
-      bindFrameAccessControl(frame);
     } catch (error) {
       console.warn('Frame enhancements skipped:', error);
     }
@@ -1653,6 +1697,7 @@
     const frame = document.getElementById('content-frame');
     const frameTitle = document.getElementById('frame-title-label');
     const titleText = clickedElement.textContent.trim().replace(/\s+/g, ' ');
+    syncFramePresentation(pageKey);
     frame.src = resolvePageSrc(pageKey, titleText);
     writeLastPage(pageKey);
     if (frameTitle) {
@@ -1667,40 +1712,39 @@
 
   document.addEventListener('DOMContentLoaded', async function() {
     await loadPageMap();
+    syncEditModeUi();
 
     const frame = document.getElementById('content-frame');
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
-    const modeToggleBtn = document.getElementById('mode-toggle-btn');
-
-    isEditMode = readEditMode();
-    updateEditModeUi();
+    const modeToggle = document.getElementById('mode-toggle');
 
     if (frame) {
       frame.addEventListener('load', function() {
         enhanceFrame(frame);
       });
+      if (frame.contentDocument && frame.contentDocument.readyState === 'complete') {
+        enhanceFrame(frame);
+      }
     }
 
-    if (modeToggleBtn) {
-      modeToggleBtn.addEventListener('click', function() {
-        if (isEditMode) {
+    if (modeToggle) {
+      modeToggle.addEventListener('click', function() {
+        if (isEditModeEnabled()) {
           setEditMode(false);
           return;
         }
 
-        const enteredCode = window.prompt('Нэвтрэх код оруулна уу:');
+        const enteredCode = window.prompt('Кодоор нэвтрэх код оруулна уу');
         if (enteredCode === null) {
-          setEditMode(false);
-          return;
-        }
-        if (enteredCode.trim() === EDIT_ACCESS_CODE) {
-          setEditMode(true);
           return;
         }
 
-        setEditMode(false);
-        window.alert('Код буруу байна. Харах горим хэвээр үлдлээ.');
+        if (enteredCode === EDIT_UNLOCK_CODE) {
+          setEditMode(true);
+        } else {
+          window.alert('Код буруу байна.');
+        }
       });
     }
 
@@ -1748,8 +1792,6 @@
         setActiveSidebarLink(defaultSidebarLink);
       }
     }
-
-    applyEditModeToCurrentFrame();
   });
 
   // Clock
