@@ -1281,74 +1281,15 @@
 // =====================
 // DATA
 // =====================
-const REGISTERED_WORKERS_CACHE_KEYS = ['registeredWorkers_v1', 'workersCustom_v1', 'workersCache_v1'];
-
-function normalizeWorkerFromRegistered(raw) {
-    if (!raw) return null;
-    const id = String(raw.id || '').trim();
-    const name = String(raw.name || '').trim();
-    const role = String(raw.role || raw.position || '').trim() || 'Тодорхойгүй';
-    if (!id || !name) return null;
-    return { id, name, role };
-}
-
-function loadWorkersFromRegisteredCache() {
-    try {
-        const dedup = new Map();
-
-        REGISTERED_WORKERS_CACHE_KEYS.forEach((key) => {
-            const raw = localStorage.getItem(key);
-            if (!raw) return;
-            const parsed = JSON.parse(raw);
-            if (!Array.isArray(parsed)) return;
-
-            parsed.forEach((item) => {
-                const worker = normalizeWorkerFromRegistered(item);
-                if (worker && !dedup.has(worker.id)) {
-                    dedup.set(worker.id, worker);
-                }
-            });
-        });
-
-        return Array.from(dedup.values());
-    } catch (error) {
-        return [];
-    }
-}
-
-const registeredWorkers = loadWorkersFromRegisteredCache();
-
-let WORKERS = registeredWorkers.length ? registeredWorkers : [
-    { id: 'EMP001', name: 'Б.Баасанжаргал', role: 'ПЧИу' },
-    { id: 'EMP002', name: 'Б.Батболд',       role: 'ПД' },
-    { id: 'EMP003', name: 'О.Нэргүй',        role: 'ПДБк' },
-    { id: 'EMP004', name: 'Л.Жаргал',        role: 'ПДБр' },
-    { id: 'EMP005', name: 'Г.Нямсүрэн',      role: 'ПДБс' },
-    { id: 'EMP006', name: 'Д.Мөнхбаяр',      role: 'пр-4' },
-    { id: 'EMP007', name: 'Т.Оюунтунгалаг',  role: 'пр-3' },
-    { id: 'EMP008', name: 'Э.Сайнзаяа',      role: 'пр-2' },
-    { id: 'EMP009', name: 'Н.Болдбаатар',    role: 'Дагалдан' },
-    { id: 'EMP010', name: 'Х.Уранцэцэг',     role: 'тор засагч' },
-    { id: 'EMP011', name: 'С.Мөнхжаргал',    role: 'жолооч' },
-    { id: 'EMP012', name: 'А.Ганбаатар',     role: 'ус олгогч' },
-    { id: 'EMP013', name: 'Б.Энхтүвшин',     role: 'гармын жижүүр' },
-    { id: 'EMP014', name: 'Д.Батчимэг',      role: 'ПЧИу' },
-    { id: 'EMP015', name: 'Л.Мандах',        role: 'ПД' },
-    { id: 'EMP016', name: 'Н.Эрдэнэчимэг',  role: 'ПДБк' },
-    { id: 'EMP017', name: 'Г.Батсүх',        role: 'ПДБр' },
-    { id: 'EMP018', name: 'Ж.Наранцэцэг',   role: 'пр-4' },
-    { id: 'EMP019', name: 'О.Гантулга',      role: 'пр-3' },
-    { id: 'EMP020', name: 'Х.Баярмаа',       role: 'пр-2' },
-    { id: 'EMP021', name: 'Б.Энхбаяр',       role: 'Дагалдан' },
-    { id: 'EMP022', name: 'С.Чимэдцэрэн',   role: 'тор засагч' },
-    { id: 'EMP023', name: 'Т.Болортуяа',     role: 'жолооч' },
-    { id: 'EMP024', name: 'М.Ганзориг',      role: 'ус олгогч' },
-    { id: 'EMP025', name: 'Д.Туяасүрэн',     role: 'гармын жижүүр' },
-    { id: 'EMP026', name: 'Н.Мөнхбат',       role: 'ПЧИу' },
-    { id: 'EMP027', name: 'Б.Оюунбилэг',    role: 'ПД' },
-    { id: 'EMP028', name: 'Э.Алтантуяа',    role: 'ПДБс' },
-    { id: 'EMP029', name: 'Г.Батжаргал',     role: 'пр-4' },
-    { id: 'EMP030', name: 'Д.Цэрэнпунцаг',  role: 'пр-3' },
+// bvrtgel.html-тэй ижил ажилтны код, нэр, албан тушаалын цорын ганц эх үүсвэр.
+let WORKERS = [
+    { id: 'EMP0001', name: 'Б.Оргилмаа', role: 'пр-4' },
+    { id: 'EMP0002', name: 'Б.Оргил', role: 'пр-4' },
+    { id: 'EMP0003', name: 'Б.Омаа', role: 'пр-4' },
+    { id: 'EMP0004', name: 'Б.Оргил', role: 'пр-4' },
+    { id: 'EMP0005', name: 'Б.Оргил', role: 'пр-4' },
+    { id: 'EMP0006', name: 'Б.Оргил', role: 'пр-4' },
+    { id: 'EMP0007', name: 'Б.Оргил', role: 'пр-4' },
 ];
 
 const STATUS_MAP = {
@@ -1634,12 +1575,6 @@ function loadAutosaveState() {
         if (!raw) return false;
         const parsed = JSON.parse(raw);
         if (!parsed || !Array.isArray(parsed.newsCards)) return false;
-
-        if (Array.isArray(parsed.workers) && parsed.workers.length) {
-            WORKERS = parsed.workers
-                .filter(w => w && w.id && w.name && w.role)
-                .map(w => ({ id: String(w.id), name: String(w.name), role: String(w.role) }));
-        }
 
         Object.keys(newsRegistrations).forEach(k => delete newsRegistrations[k]);
 
