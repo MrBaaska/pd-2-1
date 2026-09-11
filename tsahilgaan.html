@@ -710,6 +710,21 @@
         .table-status-select:focus {
             border-color: var(--accent);
         }
+        .attendance-present-row {
+            background: rgba(63,185,80,0.12);
+        }
+        .attendance-present-row .emp-name-cell,
+        .attendance-present-row .emp-role-cell,
+        .attendance-present-row .time-cell {
+            color: var(--green);
+            font-weight: 600;
+        }
+        .table-status-select.status-present {
+            background: rgba(63,185,80,0.16);
+            border-color: var(--green);
+            color: var(--green);
+            font-weight: 600;
+        }
 
         .img-viewer {
             position: fixed;
@@ -1866,12 +1881,13 @@ function renderTable() {
         if (searchTerm && !w.name.toLowerCase().includes(searchTerm) && !w.role.toLowerCase().includes(searchTerm)) return;
         const a = attendance[w.id];
         const tr = document.createElement('tr');
+        tr.className = a.status === 'present' ? 'attendance-present-row' : '';
         tr.innerHTML = `
             <td class="emp-num">${String(i++).padStart(2,'0')}</td>
             <td class="emp-name-cell">${w.name}</td>
             <td class="emp-role-cell">${w.role}</td>
             <td>
-                <select class="table-status-select" onchange="setAttendanceStatus('${w.id}', this.value, 'Хүснэгтээс бүртгэв')">
+            <select class="table-status-select ${a.status === 'present' ? 'status-present' : ''}" onchange="setAttendanceStatus('${w.id}', this.value, 'Хүснэгтээс бүртгэв')">
                     <option value="waiting" ${a.status === 'waiting' ? 'selected' : ''}>Хүлээгдэж буй</option>
                     <option value="holiday" ${a.status === 'holiday' ? 'selected' : ''}>Ээлжийн амралттай</option>
                     <option value="sick" ${a.status === 'sick' ? 'selected' : ''}>Өвчтэй</option>
