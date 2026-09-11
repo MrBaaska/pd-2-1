@@ -1286,12 +1286,12 @@ let WORKERS = [
     { id: 'EMP0001', name: 'Б.Оргилмаа', role: 'пр-4' },
     { id: 'EMP0002', name: 'Б.Оргил', role: 'пр-4' },
     { id: 'EMP0003', name: 'Б.Омаа', role: 'пр-4' },
-    { id: 'EMP0004', name: 'Б.Оргил', role: 'пр-4' },
-    { id: 'EMP0005', name: 'Б.Оргил', role: 'пр-4' },
-    { id: 'EMP0006', name: 'Б.Оргил', role: 'пр-4' },
-    { id: 'EMP0007', name: 'Б.Оргил', role: 'пр-4' },
+    { id: 'EMP0004', name: 'Б.Сарнай', role: 'пр-4' },
+    { id: 'EMP0005', name: 'Б.Туршилт', role: 'пр-5' },
+    { id: 'EMP0006', name: 'Б.Туул', role: 'пр-4' },
+    { id: 'EMP0007', name: 'Б.Халиунаа', role: 'пр-4' },
 ];
-const WORKERS_STORAGE_KEY = 'ubtz_workers_autosave_v1';
+const WORKERS_STORAGE_KEY = 'ubtz_workers_autosave_v2';
 
 try {
     const savedWorkers = JSON.parse(localStorage.getItem(WORKERS_STORAGE_KEY) || 'null');
@@ -1724,7 +1724,7 @@ function collectQrCandidates(rawText) {
 
     try {
         const url = new URL(text);
-        ['id', 'empId', 'employeeId', 'name', 'employeeName', 'fullName'].forEach((key) => {
+        ['id', 'empId', 'employeeId', 'name', 'employeeName', 'fullName', 'role', 'position'].forEach((key) => {
             const v = normalizeQrValue(url.searchParams.get(key));
             if (v) candidates.push(v);
         });
@@ -1733,7 +1733,7 @@ function collectQrCandidates(rawText) {
 
     try {
         const obj = JSON.parse(text);
-        ['id', 'empId', 'employeeId', 'name', 'employeeName', 'fullName', 'employee'].forEach((key) => {
+        ['id', 'empId', 'employeeId', 'name', 'employeeName', 'fullName', 'employee', 'role', 'position'].forEach((key) => {
             const v = normalizeQrValue(obj?.[key]);
             if (v) candidates.push(v);
         });
@@ -1747,28 +1747,29 @@ function findWorkerFromQr(rawText) {
     const candidates = collectQrCandidates(rawText);
     if (!candidates.length) return null;
 
-    const tableWorkers = getWorkersFromTableBody();
-    const sourceWorkers = tableWorkers.length
-        ? [...tableWorkers, ...WORKERS.filter(w => !tableWorkers.some(tw => tw.id === w.id))]
-        : WORKERS;
+    const sourceWorkers = WORKERS;
 
     const byId = sourceWorkers.find(w => candidates.includes(normalizeQrValue(w.id).toLowerCase()));
-    if (byId) return byId;
+    if (byId) {
+        const nameMatches = candidates.includes(normalizeQrValue(byId.name).toLowerCase());
+        const roleMatches = candidates.includes(normalizeQrValue(byId.role).toLowerCase());
+        const hasNameOrRole = candidates.some(candidate => candidate === normalizeQrValue(byId.name).toLowerCase()
+            || candidate === normalizeQrValue(byId.role).toLowerCase());
+        if (candidates.length === 1 || (nameMatches && roleMatches) || hasNameOrRole) return byId;
+    }
 
     const candidateEmpNumbers = candidates
         .map((candidate) => parseEmpNumeric(candidate))
         .filter((num) => Number.isFinite(num));
     if (candidateEmpNumbers.length) {
         const byEmpNumber = sourceWorkers.find((w) => candidateEmpNumbers.includes(parseEmpNumeric(w.id)));
-        if (byEmpNumber) return byEmpNumber;
+        if (byEmpNumber && candidates.length === 1) return byEmpNumber;
     }
 
-    const byName = sourceWorkers.find(w => candidates.includes(normalizeQrValue(w.name).toLowerCase()));
-    if (byName) return byName;
-
-    return sourceWorkers.find((w) => {
+    return sourceWorkers.find(w => {
         const name = normalizeQrValue(w.name).toLowerCase();
-        return candidates.some((candidate) => candidate.includes(name) || name.includes(candidate));
+        const role = normalizeQrValue(w.role).toLowerCase();
+        return candidates.includes(name) && candidates.includes(role);
     }) || null;
 }
 
