@@ -1298,15 +1298,41 @@
 // bvrtgel.html-тэй ижил ажилтны код, нэр, албан тушаалын цорын ганц эх үүсвэр.
 let WORKERS = [
     { id: 'EMP0001', name: 'Б.Баярсайхан', role: 'ПД' },
-    { id: 'EMP0002', name: 'М.СоёлЭрдэнэ', role: 'ПДБ' },
+    { id: 'EMP0002', name: 'М.Соёл-Эрдэнэ', role: 'ПДБ' },
     { id: 'EMP0003', name: 'Б.Энэбиш', role: 'ПДБ' },
     { id: 'EMP0004', name: 'Н.Баттулга', role: 'пр-4' },
     { id: 'EMP0005', name: 'Б.Батхишиг', role: 'пр-4' },
-    { id: 'EMP0006', name: 'О.Ганчөдөр', role: 'пр-4' },
+    { id: 'EMP0006', name: 'О.Ганчөдөр', role: 'пр-3' },
     { id: 'EMP0007', name: 'Л.Соёлмаа', role: 'пр-3' },
-    { id: 'EMP0008', name: 'туршилт', role: 'пр-6' },
+    { id: 'EMP0008', name: 'Г.Алтанбаатар', role: 'ПЧИу-1' },
     { id: 'EMP0009', name: 'З.Лхагвасүрэн', role: 'пр-3' },
-    { id: 'EMP0010', name: 'Д.Гомбосүрэн', role: 'пр-3' },
+    { id: 'EMP0010', name: 'Д.Гомбосүрэн', role: 'пр-3 т/з' },
+    { id: 'EMP0011', name: 'Б.Бум-Асрал', role: 'ПДБ' },
+    { id: 'EMP0012', name: 'С.Золбаяр', role: 'пр-5' },
+    { id: 'EMP0013', name: 'А.Шинэбаяр', role: 'пр-4' },
+    { id: 'EMP0014', name: 'Д.Жавхлантөгс', role: 'пр-3' },
+    { id: 'EMP0015', name: 'С.Оюунзул', role: 'пр-3' },
+    { id: 'EMP0016', name: 'Н.Хосбаяр', role: 'пр-3' },
+    { id: 'EMP0017', name: 'Н.Баянмөнх', role: 'пр-3' },
+    { id: 'EMP0018', name: 'Д.Буянхишиг', role: 'пр-3' },
+    { id: 'EMP0019', name: 'А.Серикгул', role: 'пр-3' },
+    { id: 'EMP0020', name: 'Б.Солонго', role: 'пр-3' },
+    { id: 'EMP0021', name: 'П.Цэрэндорж', role: 'ПДБ' },
+    { id: 'EMP0022', name: 'Ба.Баярсайхан', role: 'пр-4' },
+    { id: 'EMP0023', name: 'Х.Баттогтох', role: 'пр-4' },
+    { id: 'EMP0024', name: 'Г.Батбилэг', role: 'пр-4' },
+    { id: 'EMP0025', name: 'Э.Үүрцайх', role: 'пр-3' },
+    { id: 'EMP0026', name: 'И.Түвшинбаяр', role: 'пр-3' },
+    { id: 'EMP0027', name: 'С.Амаржаргал', role: 'пр-3' },
+    { id: 'EMP0028', name: 'Б.Батболд', role: 'жолооч' },
+    { id: 'EMP0029', name: 'М.Пүрэвхүү', role: 'пр-3' },
+    { id: 'EMP0030', name: 'Х.Хосцэцэг', role: 'пр-3' },
+    { id: 'EMP0031', name: 'С.Ганзориг', role: 'пр-3' },
+    { id: 'EMP0032', name: 'О.Болорцэцэг', role: 'пр-3' },
+    { id: 'EMP0033', name: 'Ж.Аръяажав', role: 'г/ж' },
+    { id: 'EMP0034', name: 'А.Цэцэгжаргал', role: 'г/ж' },
+    { id: 'EMP0035', name: 'С.Ган-Эрдэнэ', role: 'г/ж' },
+    { id: 'EMP0036', name: 'Ш.Ууганзаяа', role: 'г/ж' },
 ];
 const WORKERS_STORAGE_KEY = 'ubtz_workers_autosave_v3';
 
@@ -1317,9 +1343,6 @@ try {
             .filter(w => w && w.id && w.name && w.role)
                 .map(w => [String(w.id), { id: String(w.id), name: String(w.name), role: String(w.role) }]));
             WORKERS = WORKERS.map(worker => savedById.get(worker.id) || worker);
-            savedById.forEach((worker, id) => {
-                if (!WORKERS.some(existing => existing.id === id)) WORKERS.push(worker);
-            });
     }
 } catch (error) {
     console.warn('Ажилтны autosave уншигдсангүй', error);
