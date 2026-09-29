@@ -314,6 +314,42 @@
       margin-top: var(--topbar-height);
       min-height: calc(100dvh - var(--topbar-height));
     }
+    body.video-mode .topbar,
+    body.video-mode .sidebar,
+    body.video-mode .copyright-badge {
+      display: none;
+    }
+    body.video-mode .layout {
+      grid-template-columns: minmax(0, 1fr);
+      margin-top: 0;
+      min-height: 100dvh;
+      height: 100dvh;
+    }
+    body.video-mode .main.fullscreen-main {
+      height: 100dvh;
+      min-height: 100dvh;
+      overflow: hidden;
+    }
+    .video-mode-exit {
+      display: none;
+    }
+    body.video-mode .video-mode-exit {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 1200;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.72);
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+    }
 
     /* ═══════════════════════ SIDEBAR ═══════════════════════ */
     .sidebar {
@@ -588,6 +624,14 @@
       min-height: calc(100dvh - var(--topbar-height));
       max-height: calc(100dvh - var(--topbar-height));
     }
+    body.video-mode .main.fullscreen-main .content-frame-wrap {
+      height: 100dvh;
+      min-height: 100dvh;
+      max-height: 100dvh;
+      border: 0;
+      display: flex;
+      flex-direction: column;
+    }
     .frame-titlebar {
       display: flex;
       align-items: center;
@@ -616,6 +660,11 @@
     }
     .main.fullscreen-main #content-frame {
       min-height: calc(100dvh - var(--topbar-height));
+    }
+    body.video-mode .main.fullscreen-main #content-frame {
+      height: 100%;
+      min-height: 100dvh;
+      flex: 1 1 auto;
     }
 
     .sidebar-overlay {
@@ -1002,6 +1051,9 @@
       <div class="sidebar-item">
         <a href="#" class="sidebar-link" id="habea-link" data-page-key="ХАБЭА-н үзлэг"><i class="fa fa-layer-group"></i>ХАБЭА-н үзлэг</a>
       </div>
+      <div class="sidebar-item">
+        <a href="#" class="sidebar-link" id="surgalt-link" data-page-key="Сургалт"><i class="fa fa-graduation-cap"></i>Сургалт</a>
+      </div>
 
       <div class="sidebar-divider"></div>
       <div class="sidebar-item has-sub" onclick="toggleSub(this)">
@@ -1042,6 +1094,7 @@
         </div>
         <iframe id="content-frame" src="./heseg.html" frameborder="0" style="width:100%;" allow="camera *; microphone *; autoplay *; clipboard-write *; encrypted-media *; gyroscope *; picture-in-picture *; fullscreen *"></iframe>
       </div>
+      <button class="video-mode-exit" id="video-mode-exit" type="button" aria-label="Өмнөх хуудас руу буцах" title="Өмнөх хуудас руу буцах"><i class="fa fa-xmark" aria-hidden="true"></i></button>
     </div>
   </main>
 
@@ -1053,13 +1106,15 @@
   let pageMap = {};
   const UI_STORAGE_KEYS = {
     lastPage: 'ubtz:index:last-page',
-    editMode: 'ubtz:index:edit-mode'
+    editMode: 'ubtz:index:edit-mode',
+    videoReturnPage: 'ubtz:index:video-return-page'
   };
   const FRAME_STORAGE_PREFIX = 'ubtz:autosave:';
   const EDIT_UNLOCK_CODE = '91@6#4820';
   const FULLSCREEN_PAGE_KEYS = new Set([
     'Ажлын бүртгэл',
-    'Хурлын тэмдэглэл'
+    'Хурлын тэмдэглэл',
+    'Зааварчилгаа / Тор засагч'
   ]);
 
   function readLastPage() {
@@ -1506,6 +1561,7 @@
       return;
     }
     main.classList.toggle('fullscreen-main', FULLSCREEN_PAGE_KEYS.has(pageKey));
+    document.body.classList.toggle('video-mode', pageKey === 'Зааварчилгаа / Тор засагч');
   }
 
   function getFrameContentHeight(doc) {
@@ -1536,6 +1592,15 @@
   function syncFrameSize(frame) {
     const wrap = frame.closest('.content-frame-wrap');
     if (!wrap) {
+      return;
+    }
+
+    if (document.body.classList.contains('video-mode')) {
+      wrap.style.height = '';
+      wrap.style.minHeight = '';
+      frame.style.height = '';
+      frame.style.minHeight = '';
+      frame.style.flex = '';
       return;
     }
 
@@ -1696,6 +1761,16 @@
     const frame = document.getElementById('content-frame');
     const frameTitle = document.getElementById('frame-title-label');
     const titleText = clickedElement.textContent.trim().replace(/\s+/g, ' ');
+    if (pageKey === 'Зааварчилгаа / Тор засагч') {
+      const previousPage = readLastPage();
+      if (previousPage && previousPage !== pageKey) {
+        try {
+          sessionStorage.setItem(UI_STORAGE_KEYS.videoReturnPage, previousPage);
+        } catch (error) {
+          console.warn('Video return page state write failed:', error);
+        }
+      }
+    }
     syncFramePresentation(pageKey);
     frame.src = resolvePageSrc(pageKey, titleText);
     writeLastPage(pageKey);
@@ -1751,6 +1826,23 @@
       sidebarToggle.addEventListener('click', function() {
         const sidebar = document.querySelector('.sidebar');
         setSidebarOpen(!(sidebar && sidebar.classList.contains('is-open')));
+      });
+    }
+
+    const videoModeExit = document.getElementById('video-mode-exit');
+    if (videoModeExit) {
+      videoModeExit.addEventListener('click', function() {
+        let returnPage = null;
+        try {
+          returnPage = sessionStorage.getItem(UI_STORAGE_KEYS.videoReturnPage);
+        } catch (error) {
+          console.warn('Video return page state read failed:', error);
+        }
+        const returnElement = (returnPage && returnPage !== 'Зааварчилгаа / Тор засагч' && findPageElement(returnPage))
+          || document.getElementById('heseg-link');
+        if (returnElement) {
+          loadFramePage(returnElement.dataset.pageKey, returnElement);
+        }
       });
     }
 
